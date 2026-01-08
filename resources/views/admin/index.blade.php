@@ -1,17 +1,16 @@
-<style>
-    body {
-        background-color: #ffffff;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        padding: 20px;
-        margin: 0;
-    }
+@extends('admin.layouts.app')
 
+@section('title', 'Products - Admin Panel')
+
+@section('styles')
+<style>
     .container {
         max-width: 1200px;
         margin: 0 auto;
         background-color: white;
         padding: 30px;
-        border-radius: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .header {
@@ -19,40 +18,39 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 25px;
-        border-bottom: 3px solid #e58423;
+        border-bottom: 2px solid #8b0000;
         padding-bottom: 15px;
     }
 
     h2 {
-        color: #642714;
+        color: #1a1a1a;
         font-size: 28px;
         margin: 0;
     }
 
     .btn-add {
-        background: linear-gradient(135deg, #e58423 0%, #ec9105 100%);
+        background: #8b0000;
         color: white;
-        padding: 8px 16px;
+        padding: 10px 20px;
         text-decoration: none;
-        border-radius: 6px;
+        border-radius: 4px;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 14px;
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        box-shadow: 0 2px 4px rgba(229, 132, 35, 0.3);
+        gap: 8px;
     }
 
     .btn-add:hover {
-        background: linear-gradient(135deg, #d67520 0%, #d68204 100%);
+        background: #a00000;
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(229, 132, 35, 0.4);
+        box-shadow: 0 4px 8px rgba(139, 0, 0, 0.3);
     }
 
     .btn-add::before {
         content: '+';
-        font-size: 16px;
+        font-size: 18px;
         font-weight: bold;
     }
 
@@ -70,9 +68,9 @@
 
     .search-input {
         width: 100%;
-        padding: 10px 40px 10px 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
+        padding: 12px 40px 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
         font-size: 14px;
         transition: all 0.3s ease;
         outline: none;
@@ -80,8 +78,8 @@
     }
 
     .search-input:focus {
-        border-color: #e58423;
-        box-shadow: 0 0 0 3px rgba(229, 132, 35, 0.1);
+        border-color: #8b0000;
+        box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
     }
 
     .search-icon {
@@ -105,7 +103,7 @@
         border-radius: 50%;
         width: 20px;
         height: 20px;
-        font-size: 12px;
+        font-size: 14px;
         cursor: pointer;
         display: none;
         align-items: center;
@@ -125,11 +123,13 @@
         color: #666;
         font-size: 13px;
         margin-top: 10px;
+        display: none;
     }
 
     .table-wrapper {
         width: 100%;
         min-height: 400px;
+        overflow-x: auto;
     }
 
     table {
@@ -138,9 +138,8 @@
         border-spacing: 0;
         margin-top: 20px;
         background-color: white;
-        border-radius: 10px;
+        border-radius: 4px;
         overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         table-layout: fixed;
     }
 
@@ -151,9 +150,9 @@
     th:nth-child(5) { width: 20%; }
 
     th {
-        background: linear-gradient(135deg, #e58423 0%, #ec9105 100%);
+        background: #2a2a2a;
         color: white;
-        padding: 12px 15px;
+        padding: 14px 15px;
         text-align: left;
         font-weight: 600;
         text-transform: uppercase;
@@ -162,8 +161,8 @@
     }
 
     td {
-        padding: 12px 15px;
-        border-bottom: 1px solid #f0f0f0;
+        padding: 14px 15px;
+        border-bottom: 1px solid #e5e5e5;
         color: #333;
         font-size: 14px;
         overflow: hidden;
@@ -180,8 +179,7 @@
     }
 
     tbody tr:hover:not(.hidden) {
-        background-color: #fff8e7;
-        transform: scale(1.01);
+        background-color: #fafafa;
     }
 
     tbody tr.hidden {
@@ -189,66 +187,67 @@
     }
 
     td img {
-        border-radius: 6px;
+        border-radius: 4px;
         object-fit: cover;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e5e5;
         transition: transform 0.3s ease;
     }
 
     td img:hover {
         transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     .action-buttons {
         display: flex;
-        gap: 6px;
+        gap: 8px;
         align-items: center;
     }
 
     .btn-edit {
-        background: linear-gradient(135deg, #ec9105 0%, #e58423 100%);
+        background: #555;
         color: white;
-        padding: 6px 12px;
+        padding: 7px 14px;
         text-decoration: none;
-        border-radius: 5px;
+        border-radius: 4px;
         font-size: 12px;
         font-weight: 500;
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
     }
 
     .btn-edit:hover {
-        background: linear-gradient(135deg, #d68204 0%, #d67520 100%);
+        background: #333;
         transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(236, 145, 5, 0.3);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .btn-edit::before {
         content: '✎';
-        font-size: 13px;
+        font-size: 14px;
     }
 
     .btn-delete {
-        background: linear-gradient(135deg, #ed6325 0%, #d24f01 100%);
+        background: #8b0000;
         color: white;
-        padding: 6px 12px;
+        padding: 7px 14px;
         border: none;
-        border-radius: 5px;
+        border-radius: 4px;
         font-size: 12px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
     }
 
     .btn-delete:hover {
-        background: linear-gradient(135deg, #d24f01 0%, #b84401 100%);
+        background: #a00000;
         transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(237, 99, 37, 0.3);
+        box-shadow: 0 2px 4px rgba(139, 0, 0, 0.3);
     }
 
     .btn-delete::before {
@@ -262,16 +261,16 @@
     }
 
     .price {
-        color: #e58423;
+        color: #1a1a1a;
         font-weight: 600;
         font-size: 15px;
     }
 
     .stock {
-        background: linear-gradient(135deg, #e7c481 0%, #f0d49e 100%);
-        color: #642714;
-        padding: 3px 10px;
-        border-radius: 12px;
+        background: #f0f0f0;
+        color: #333;
+        padding: 4px 12px;
+        border-radius: 4px;
         font-weight: 600;
         font-size: 12px;
         display: inline-block;
@@ -284,21 +283,26 @@
     }
 
     .product-name {
-        color: #642714;
+        color: #1a1a1a;
         font-weight: 600;
     }
 
     .no-results {
         text-align: center;
-        padding: 40px 20px;
+        padding: 60px 20px;
         color: #999;
-        font-size: 14px;
+        font-size: 15px;
+        display: none;
+    }
+
+    .no-results p {
+        margin-bottom: 10px;
     }
 
     /* Responsive design */
     @media (max-width: 768px) {
         .container {
-            padding: 15px;
+            padding: 20px;
         }
 
         .header {
@@ -316,15 +320,21 @@
         }
 
         th, td {
-            padding: 8px;
+            padding: 10px 8px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 5px;
         }
     }
 </style>
+@endsection
 
-{{-- @extends('admin.layouts.sidebar') --}}
+@section('content')
 <div class="container">
     <div class="header">
-        <h2>Product Data</h2>
+        <h2>Products Management</h2>
         <a href="{{ route('admin.products.create') }}" class="btn-add">Add Product</a>
     </div>
 
@@ -337,7 +347,7 @@
                 placeholder="Search by product name, price, or stock..."
             >
             <button class="clear-search" id="clearSearch">×</button>
-            {{-- <span class="search-icon">🔍</span> --}}
+            <span class="search-icon"></span>
         </div>
     </div>
 
@@ -355,7 +365,7 @@
                 </tr>
             </thead>
             <tbody id="productTable">
-                @foreach ($products as $product)
+                @forelse ($products as $product)
                 <tr data-name="{{ strtolower($product->name) }}" 
                     data-price="{{ $product->price }}" 
                     data-stock="{{ $product->stock }}">
@@ -380,16 +390,25 @@
                         </div>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                        No products available. Click "Add Product" to create one.
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 
-    <div id="noResults" class="no-results" style="display: none;">
-        <p>No products found matching your search.</p>
+    <div id="noResults" class="no-results">
+        <p><strong>No products found matching your search.</strong></p>
+        <p>Try adjusting your search terms.</p>
     </div>
 </div>
+@endsection
 
+@section('scripts')
 <script>
     const searchInput = document.getElementById('searchInput');
     const clearSearch = document.getElementById('clearSearch');
@@ -468,3 +487,4 @@
         }
     });
 </script>
+@endsection
