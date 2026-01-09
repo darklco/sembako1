@@ -1,3 +1,4 @@
+@extends('admin.layouts.app')
 <style>
     body {
         background-color: #ffffff;

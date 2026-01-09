@@ -301,33 +301,33 @@
     <!-- Sidebar Navigation -->
     <nav class="sidebar-nav">
         <!-- Main Section -->
-        <div class="nav-section">
+        {{-- <div class="nav-section">
             <div class="nav-section-title">Main</div>
             <div class="nav-item">
-                {{-- <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"> --}}
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <span class="nav-icon">📊</span>
                     <span>Dashboard</span>
                 </a>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Management Section -->
         <div class="nav-section">
             <div class="nav-section-title">Management</div>
             <div class="nav-item">
-                <a href="{{ route('admin.products.create') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.index') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
                     <span class="nav-icon">📦</span>
-                    <span>Products</span>
-                    <span class="nav-badge">{{ $products->count() ?? 0 }}</span>
+                    <span>Dashboard</span>
+                    {{-- <span class="nav-badge">{{ $products->count() ?? 0 }}</span> --}}
                 </a>
             </div>
-            {{-- <div class="nav-item">
-                <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+            <div class="nav-item">
+                <a href="{{ route('admin.products.create') }}" class="nav-link {{ request()->routeIs('admin.products.create*') ? 'active' : '' }}">
                     <span class="nav-icon">🏷️</span>
-                    <span>Categories</span>
+                    <span>Products</span>
                 </a>
             </div>
-            <div class="nav-item"> --}}
+            {{-- <div class="nav-item"> 
                 {{-- <a href="{{ route('admin.orders.index') }}" class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                     <span class="nav-icon">🛒</span>
                     <span>Orders</span>
