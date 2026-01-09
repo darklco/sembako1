@@ -16,7 +16,7 @@
     }
 
     .header {
-        border-bottom: 3px solid #e58423;
+        border-bottom: 3px solid #8b0000;
         padding-bottom: 15px;
         margin-bottom: 30px;
     }
@@ -54,7 +54,7 @@
     textarea {
         width: 100%;
         padding: 12px 15px;
-        border: 2px solid #e7c481;
+        border: 2px solid #982626;
         border-radius: 8px;
         font-size: 14px;
         font-family: inherit;
@@ -67,7 +67,7 @@
     input[type="number"]:focus,
     textarea:focus {
         outline: none;
-        border-color: #e58423;
+        border-color: #8b0000;
         background-color: white;
         box-shadow: 0 0 0 3px rgba(229, 132, 35, 0.1);
     }
@@ -80,7 +80,7 @@
     input[type="file"] {
         width: 100%;
         padding: 10px;
-        border: 2px dashed #e7c481;
+        border: 2px dashed #982626;
         border-radius: 8px;
         font-size: 13px;
         background-color: #fffbf0;
@@ -89,7 +89,7 @@
     }
 
     input[type="file"]:hover {
-        border-color: #e58423;
+        border-color: #8b0000;
         background-color: #fff8e7;
     }
 
@@ -113,7 +113,7 @@
     }
 
     .btn-submit {
-        background: linear-gradient(135deg, #e58423 0%, #ec9105 100%);
+        background: linear-gradient(135deg, #8b0000 0%, #982626 100%);
         color: white;
         padding: 12px 24px;
         border: none;
@@ -131,7 +131,7 @@
     }
 
     .btn-submit:hover {
-        background: linear-gradient(135deg, #d67520 0%, #d68204 100%);
+        background: linear-gradient(135deg, #8b0000 0%, #982626 100%);
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(229, 132, 35, 0.4);
     }

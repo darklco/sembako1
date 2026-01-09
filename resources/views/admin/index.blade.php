@@ -335,7 +335,7 @@
 <div class="container">
     <div class="header">
         <h2>Products Management</h2>
-        <a href="{{ route('admin.products.create') }}" class="btn-add">Add Product</a>
+        {{-- <a href="{{ route('admin.products.create') }}" class="btn-add">Add Product</a> --}}
     </div>
 
     <div class="search-container">

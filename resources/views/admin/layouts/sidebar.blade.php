@@ -315,7 +315,7 @@
         <div class="nav-section">
             <div class="nav-section-title">Management</div>
             <div class="nav-item">
-                <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.products.create') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
                     <span class="nav-icon">📦</span>
                     <span>Products</span>
                     <span class="nav-badge">{{ $products->count() ?? 0 }}</span>
