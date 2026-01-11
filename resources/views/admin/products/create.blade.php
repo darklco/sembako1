@@ -10,7 +10,7 @@
     .container {
         max-width: 600px;
         margin: 0 auto;
-        background-color: white;
+        background-color: rgb(255, 255, 255);
         padding: 35px;
         border-radius: 15px;
         /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
@@ -61,7 +61,7 @@
         font-family: inherit;
         transition: all 0.3s ease;
         box-sizing: border-box;
-        background-color: #fffbf0;
+        background-color: #ffffff;
     }
 
     input[type="text"]:focus,

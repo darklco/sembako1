@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\TransactionController;
 
 // =======================
 // AUTH ADMIN
@@ -21,7 +22,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     ->middleware('auth')
     ->name('index');
 
-
     // logout
     Route::post('/logout', [UserController::class, 'logout'])
         ->name('logout');
@@ -29,4 +29,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // products CRUD
     Route::resource('products', ProductsController::class)
         ->middleware('auth');
+
+    // Transaksi
+    Route::post('/transaction', [TransactionController::class, 'store']);
 });
