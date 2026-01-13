@@ -340,7 +340,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="#" class="nav-link">
+                         <a href="{{ route('admin.transaction') }}" class="nav-link">
                             <span>Customers</span>
                         </a>
                     </div>

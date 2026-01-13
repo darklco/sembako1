@@ -2,12 +2,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Transaction;
+use App\Models\TransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    public function store(Request $request)
+    public function index()
+    {
+        $transactions = Transaction::latest()->paginate(15);
+        return view('admin.transaction', compact('transactions'));
+    }
+
+   public function store(Request $request)
     {
         $request->validate([
             'items' => 'required|array',
@@ -15,33 +23,45 @@ class TransactionController extends Controller
             'items.*.qty' => 'required|integer|min:1',
         ]);
 
-        $total = 0;
-
         DB::beginTransaction();
 
         try {
+            $total = 0;
+
+            $transaction = Transaction::create([
+                'invoice_number' => 'INV-' . now()->format('YmdHis'),
+                'total' => 0,
+            ]);
+
             foreach ($request->items as $item) {
                 $product = Product::lockForUpdate()->find($item['product_id']);
 
-                // Cek stok
                 if ($product->stock < $item['qty']) {
-                    throw new \Exception("the item {$product->name} is out of stock");
+                    throw new \Exception("Stok {$product->name} tidak cukup");
                 }
 
-                // Hitung subtotal
                 $subtotal = $product->price * $item['qty'];
                 $total += $subtotal;
 
-                // Kurangi stok
-                $product->stock -= $item['qty'];
-                $product->save();
+                TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id' => $product->id,
+                    'price' => $product->price,
+                    'qty' => $item['qty'],
+                    'subtotal' => $subtotal,
+                ]);
+
+                $product->decrement('stock', $item['qty']);
             }
+
+            $transaction->update(['total' => $total]);
 
             DB::commit();
 
             return response()->json([
                 'message' => 'Transaction successful',
-                'total_belanja' => $total
+                'invoice' => $transaction->invoice_number,
+                'total' => $total
             ]);
 
         } catch (\Exception $e) {
@@ -52,5 +72,10 @@ class TransactionController extends Controller
                 'error' => $e->getMessage()
             ], 400);
         }
+    }
+    public function show(Transaction $transaction)
+    {
+        $transaction->load('items.product');
+        return view('admin.showtransaction', compact('transaction'));
     }
 }

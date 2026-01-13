@@ -31,5 +31,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware('auth');
 
     // Transaksi
-    Route::post('/transaction', [TransactionController::class, 'store']);
+    Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
+    Route::get('/transaction', [TransactionController::class, 'index'])->name('transaction');
+    Route::get('/transaction/{transaction}', [TransactionController::class, 'show'])->name('transaction.show');
 });
