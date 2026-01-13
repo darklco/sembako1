@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\user\KasirController;
 
 // =======================
 // AUTH ADMIN
@@ -34,4 +35,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
     Route::get('/transaction', [TransactionController::class, 'index'])->name('transaction');
     Route::get('/transaction/{transaction}', [TransactionController::class, 'show'])->name('transaction.show');
+});
+
+// |-----------------
+// | USER / KASIR
+// |-----------------
+Route::prefix('users')->name('users.')->group(function () {
+    Route::get('/', [KasirController::class, 'index'])->name('index');
+    Route::get('/riwayat', [KasirController::class, 'riwayat'])->name('riwayat');
+    Route::get('/pembayaran', [KasirController::class, 'pembayaran'])->name('pembayaran');
+    
+   
+    Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
 });
