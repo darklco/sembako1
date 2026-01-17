@@ -11,7 +11,8 @@ class Transaction extends Model
 
     protected $fillable = [
         'invoice_number',
-        'total'
+        'total',
+        'user_id'
     ];
 
     public function items()

@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\user\KasirController;
+use App\Http\Controllers\DashboardController;
 
 // =======================
 // AUTH ADMIN
@@ -19,22 +20,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('login.process');
 
     // dashboard
-   Route::get('/', [ProductsController::class, 'index'])
+   Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware('auth')
-    ->name('index');
+    ->name('dashboard');
+
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    });
 
     // logout
     Route::post('/logout', [UserController::class, 'logout'])
         ->name('logout');
 
-    // products CRUD
+    // Transaksi
+    Route::post('/transaction', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::get('/transaction', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transaction/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
+
+      // products CRUD
     Route::resource('products', ProductsController::class)
         ->middleware('auth');
-
-    // Transaksi
-    Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
-    Route::get('/transaction', [TransactionController::class, 'index'])->name('transaction');
-    Route::get('/transaction/{transaction}', [TransactionController::class, 'show'])->name('transaction.show');
 });
 
 // |-----------------

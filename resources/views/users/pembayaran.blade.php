@@ -294,11 +294,10 @@
 </div>
 
 <script>
-    // 1. Ambil data dari localStorage (Dikirim dari halaman Index)
     const totalBelanja = parseInt(localStorage.getItem('checkoutTotal')) || 0;
     const rincianNama = localStorage.getItem('checkoutNama') || "Tidak ada barang";
 
-    // 2. Fungsi untuk menampilkan data ke UI
+    
     function inisialisasiHalaman() {
         // Update Total di Kotak Cokelat
         document.getElementById('totalBelanjaDisplay').textContent = 'Rp ' + formatRupiah(totalBelanja);

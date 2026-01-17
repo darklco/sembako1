@@ -325,25 +325,20 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Management</div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.index') }}" class="nav-link">
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
                             <span>Dashboard</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.products.create') }}" class="nav-link">
+                        <a href="{{ route('admin.products.index') }}" class="nav-link">
                             <span>Products</span>
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span>Orders</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                         <a href="{{ route('admin.transaction') }}" class="nav-link">
-                            <span>Customers</span>
-                        </a>
-                    </div>
+                    <a href="{{ route('admin.transactions.index') }}" class="nav-link">
+                  <span>History Transaksi</span> 
+                 </a>
+                </div>
                 </div>
 
             <!-- Sidebar Footer -->

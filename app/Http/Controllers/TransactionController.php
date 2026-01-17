@@ -6,16 +6,42 @@ use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon; // Tambahkan ini untuk urusan tanggal
 
 class TransactionController extends Controller
 {
-    public function index()
+    // UNTUK ADMIN: Bisa lihat semua & pilih tanggal
+    public function index(Request $request) 
     {
-        $transactions = Transaction::latest()->paginate(15);
+        $query = Transaction::query();
+
+        // Fitur Kalender: Memproses filter jika Admin memilih tanggal
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $transactions = $query->latest()->paginate(15);
         return view('admin.transaction', compact('transactions'));
     }
 
-   public function store(Request $request)
+    // UNTUK KASIR: Otomatis reset setiap hari (hanya tampil hari ini)
+    public function riwayatKasir()
+    {
+        // Logika: Ambil data yang HANYA dibuat tanggal hari ini
+        $transactions = Transaction::whereDate('created_at', Carbon::today())
+                        ->latest()
+                        ->get();
+
+        $totalPendapatan = $transactions->sum('total');
+        $jumlahTransaksi = $transactions->count();
+
+        return view('users.riwayat', compact('transactions', 'totalPendapatan', 'jumlahTransaksi'));
+    }
+
+    public function store(Request $request)
     {
         $request->validate([
             'items' => 'required|array',
@@ -57,11 +83,13 @@ class TransactionController extends Controller
             $transaction->update(['total' => $total]);
 
             DB::commit();
+            session(['last_transaction_id' => $transaction->id]);
 
             return response()->json([
                 'message' => 'Transaction successful',
                 'invoice' => $transaction->invoice_number,
-                'total' => $total
+                'total' => $total,
+                'redirect_url' => route('users.pembayaran')
             ]);
 
         } catch (\Exception $e) {
@@ -73,6 +101,7 @@ class TransactionController extends Controller
             ], 400);
         }
     }
+
     public function show(Transaction $transaction)
     {
         $transaction->load('items.product');

@@ -4,487 +4,366 @@
 
 @section('styles')
 <style>
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    .products-container {
+        padding: 40px;
+        min-height: 100vh;
     }
 
-    .header {
+    .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 25px;
-        border-bottom: 2px solid #8b0000;
-        padding-bottom: 15px;
+        margin-bottom: 32px;
     }
 
-    h2 {
-        color: #1a1a1a;
+    .header-left h1 {
         font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0 0 8px 0;
+    }
+
+    .header-left p {
+        font-size: 15px;
+        color: #737373;
         margin: 0;
     }
 
     .btn-add {
-        background: #8b0000;
-        color: white;
-        padding: 10px 20px;
+        background: #dc2626;
+        color: white !important;
+        padding: 12px 24px;
         text-decoration: none;
-        border-radius: 4px;
-        font-weight: 600;
+        border-radius: 6px;
+        font-weight: 500;
         font-size: 14px;
-        transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
     .btn-add:hover {
-        background: #a00000;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(139, 0, 0, 0.3);
+        background: #b91c1c;
+        transform: translateY(-1px);
     }
 
-    .btn-add::before {
-        content: '+';
-        font-size: 18px;
-        font-weight: bold;
+    .content-card {
+        background: #ffffff;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        overflow: hidden;
     }
 
-    .search-container {
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .search-box {
-        position: relative;
-        width: 350px;
+    .card-header {
+        padding: 24px;
+        border-bottom: 1px solid #e8e8e8;
     }
 
     .search-input {
         width: 100%;
-        padding: 12px 40px 12px 15px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        max-width: 400px;
+        padding: 12px 16px;
+        border: 1px solid #e8e8e8;
+        border-radius: 6px;
         font-size: 14px;
-        transition: all 0.3s ease;
+        color: #1a1a1a;
         outline: none;
-        box-sizing: border-box;
-    }
-
-    .search-input:focus {
-        border-color: #8b0000;
-        box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
-    }
-
-    .search-icon {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #999;
-        font-size: 16px;
-        pointer-events: none;
-    }
-
-    .clear-search {
-        position: absolute;
-        right: 35px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #999;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        font-size: 14px;
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        justify-content: center;
         transition: all 0.2s ease;
     }
 
-    .clear-search:hover {
-        background: #666;
+    .search-input:focus {
+        border-color: #dc2626;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
-    .clear-search.show {
-        display: flex;
-    }
-
-    .search-results {
-        color: #666;
-        font-size: 13px;
-        margin-top: 10px;
-        display: none;
+    .search-input::placeholder {
+        color: #a3a3a3;
     }
 
     .table-wrapper {
-        width: 100%;
-        min-height: 400px;
         overflow-x: auto;
     }
 
     table {
         width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        margin-top: 20px;
-        background-color: white;
-        border-radius: 4px;
-        overflow: hidden;
-        table-layout: fixed;
+        border-collapse: collapse;
     }
 
-    th:nth-child(1) { width: 30%; }
-    th:nth-child(2) { width: 20%; }
-    th:nth-child(3) { width: 15%; }
-    th:nth-child(4) { width: 15%; }
-    th:nth-child(5) { width: 20%; }
+    thead {
+        background: #fafafa;
+    }
 
     th {
-        background: #2a2a2a;
-        color: white;
-        padding: 14px 15px;
+        padding: 16px 24px;
         text-align: left;
+        font-size: 13px;
         font-weight: 600;
+        color: #525252;
         text-transform: uppercase;
-        font-size: 12px;
         letter-spacing: 0.5px;
-    }
-
-    td {
-        padding: 14px 15px;
-        border-bottom: 1px solid #e5e5e5;
-        color: #333;
-        font-size: 14px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    tr:last-child td {
-        border-bottom: none;
+        border-bottom: 1px solid #e8e8e8;
     }
 
     tbody tr {
-        transition: all 0.2s ease;
+        transition: background-color 0.15s ease;
     }
 
-    tbody tr:hover:not(.hidden) {
-        background-color: #fafafa;
+    tbody tr:hover {
+        background: #fafafa;
     }
 
-    tbody tr.hidden {
-        display: none !important;
+    td {
+        padding: 16px 24px;
+        border-bottom: 1px solid #f5f5f5;
+        font-size: 14px;
+        color: #1a1a1a;
     }
 
-    td img {
+    .product-name {
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .product-price {
+        font-weight: 500;
+        color: #525252;
+    }
+
+    .stock-badge {
+        display: inline-block;
+        background: #f5f5f5;
+        color: #525252;
+        padding: 6px 12px;
         border-radius: 4px;
-        object-fit: cover;
-        border: 1px solid #e5e5e5;
-        transition: transform 0.3s ease;
+        font-size: 13px;
+        font-weight: 500;
     }
 
-    td img:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .product-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        object-fit: cover;
+        border: 1px solid #e8e8e8;
+    }
+
+    .no-image {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        background: #f5f5f5;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #a3a3a3;
+        border: 1px solid #e8e8e8;
     }
 
     .action-buttons {
         display: flex;
-        gap: 8px;
+        gap: 16px;
         align-items: center;
     }
 
     .btn-edit {
-        background: #555;
-        color: white;
-        padding: 7px 14px;
+        color: #525252;
         text-decoration: none;
-        border-radius: 4px;
-        font-size: 12px;
         font-weight: 500;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
+        font-size: 14px;
+        transition: color 0.2s ease;
     }
 
     .btn-edit:hover {
-        background: #333;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-edit::before {
-        content: '✎';
-        font-size: 14px;
+        color: #1a1a1a;
     }
 
     .btn-delete {
-        background: #8b0000;
-        color: white;
-        padding: 7px 14px;
+        color: #dc2626;
         border: none;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 500;
+        background: none;
         cursor: pointer;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
+        padding: 0;
+        font-weight: 500;
+        font-size: 14px;
+        font-family: inherit;
+        transition: color 0.2s ease;
     }
 
     .btn-delete:hover {
-        background: #a00000;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(139, 0, 0, 0.3);
+        color: #b91c1c;
     }
 
-    .btn-delete::before {
-        content: '🗑';
-        font-size: 12px;
-    }
-
-    .delete-form {
-        display: inline;
-        margin: 0;
-    }
-
-    .price {
-        color: #1a1a1a;
-        font-weight: 600;
-        font-size: 15px;
-    }
-
-    .stock {
-        background: #f0f0f0;
-        color: #333;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-weight: 600;
-        font-size: 12px;
-        display: inline-block;
-    }
-
-    .no-image {
-        color: #999;
-        font-style: italic;
-        font-size: 12px;
-    }
-
-    .product-name {
-        color: #1a1a1a;
-        font-weight: 600;
-    }
-
+    .empty-state,
     .no-results {
         text-align: center;
         padding: 60px 20px;
-        color: #999;
+        color: #737373;
+    }
+
+    .empty-state p,
+    .no-results p {
+        margin: 0;
         font-size: 15px;
+    }
+
+    .no-results {
         display: none;
     }
 
-    .no-results p {
-        margin-bottom: 10px;
-    }
-
-    /* Responsive design */
+    /* Responsive */
     @media (max-width: 768px) {
-        .container {
-            padding: 20px;
+        .products-container {
+            padding: 24px;
         }
 
-        .header {
+        .page-header {
             flex-direction: column;
-            gap: 15px;
             align-items: flex-start;
+            gap: 16px;
         }
 
-        .search-box {
+        .header-left h1 {
+            font-size: 24px;
+        }
+
+        .btn-add {
             width: 100%;
+            justify-content: center;
         }
 
-        table {
-            font-size: 12px;
+        .search-input {
+            max-width: 100%;
         }
 
         th, td {
-            padding: 10px 8px;
+            padding: 12px 16px;
+            font-size: 13px;
         }
 
         .action-buttons {
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
+            align-items: flex-start;
         }
     }
 </style>
 @endsection
 
 @section('content')
-<div class="container">
-    <div class="header">
-        <h2>Products Management</h2>
-        {{-- <a href="{{ route('admin.products.create') }}" class="btn-add">Add Product</a> --}}
+<div class="products-container">
+    <div class="page-header">
+        <div class="header-left">
+            <h1>Products Management</h1>
+            <p>Kelola semua produk Anda</p>
+        </div>
+        <a href="{{ route('admin.products.create') }}" class="btn-add">
+            + Tambah Produk Baru
+        </a>
     </div>
 
-    <div class="search-container">
-        <div class="search-box">
+    <div class="content-card">
+        <div class="card-header">
             <input 
                 type="text" 
                 id="searchInput" 
                 class="search-input" 
-                placeholder="Search by product name, price, or stock..."
-            >
-            <button class="clear-search" id="clearSearch">×</button>
-            <span class="search-icon"></span>
+                onkeyup="filterTabel()" 
+                placeholder="Cari produk berdasarkan nama...">
+        </div>
+
+        <div class="table-wrapper">
+            <table id="mainTable">
+                <thead>
+                    <tr>
+                        <th>Nama Produk</th>
+                        <th>Harga</th>
+                        <th>Stok</th>
+                        <th>Gambar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="productTable">
+                    @forelse ($products as $product)
+                    <tr class="baris-produk">
+                        <td>
+                            <span class="product-name nama-target">{{ $product->name }}</span>
+                        </td>
+                        <td>
+                            <span class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        </td>
+                        <td>
+                            <span class="stock-badge">{{ $product->stock }} pcs</span>
+                        </td>
+                        <td>
+                            @if($product->image)
+                                <img src="{{ asset('storage/'.$product->image) }}" class="product-image" alt="{{ $product->name }}">
+                            @else
+                                <div class="no-image">No Image</div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn-edit">Edit</a>
+                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?')" style="margin: 0;">
+                                    @csrf 
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-delete">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <p>Belum ada produk. Mulai tambahkan produk pertama Anda.</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noResults" class="no-results">
+            <p>Produk tidak ditemukan</p>
         </div>
     </div>
-
-    <div class="search-results" id="searchResults"></div>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="productTable">
-                @forelse ($products as $product)
-                <tr data-name="{{ strtolower($product->name) }}" 
-                    data-price="{{ $product->price }}" 
-                    data-stock="{{ $product->stock }}">
-                    <td><span class="product-name">{{ $product->name }}</span></td>
-                    <td><span class="price">Rp {{ number_format($product->price, 0, ',', '.') }}</span></td>
-                    <td><span class="stock">{{ $product->stock }} pcs</span></td>
-                    <td>
-                        @if($product->image)
-                            <img src="{{ asset('storage/'.$product->image) }}" width="60" height="60" alt="{{ $product->name }}">
-                        @else
-                            <span class="no-image">No image</span>
-                        @endif
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="{{ route('admin.products.edit', $product->id) }}" class="btn-edit">Edit</a>
-                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this product?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-delete">Delete</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
-                        No products available. Click "Add Product" to create one.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    <div id="noResults" class="no-results">
-        <p><strong>No products found matching your search.</strong></p>
-        <p>Try adjusting your search terms.</p>
-    </div>
 </div>
-@endsection
 
-@section('scripts')
 <script>
-    const searchInput = document.getElementById('searchInput');
-    const clearSearch = document.getElementById('clearSearch');
-    const searchResults = document.getElementById('searchResults');
-    const productTable = document.getElementById('productTable');
-    const noResults = document.getElementById('noResults');
-    const tableWrapper = document.querySelector('.table-wrapper');
-    const allRows = productTable.getElementsByTagName('tr');
-    const totalProducts = allRows.length;
+    function filterTabel() {
+        var input = document.getElementById("searchInput");
+        var filter = input.value.toLowerCase().trim();
+        var rows = document.getElementsByClassName("baris-produk");
+        var foundCount = 0;
 
-    function performSearch() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        
-        // Show/hide clear button
-        if (searchTerm) {
-            clearSearch.classList.add('show');
-        } else {
-            clearSearch.classList.remove('show');
-        }
-
-        let visibleCount = 0;
-
-        // Loop through all table rows
-        for (let i = 0; i < allRows.length; i++) {
-            const row = allRows[i];
-            const name = row.getAttribute('data-name') || '';
-            const price = row.getAttribute('data-price') || '';
-            const stock = row.getAttribute('data-stock') || '';
-
-            // Check if search term matches name, price, or stock
-            if (name.includes(searchTerm) || 
-                price.includes(searchTerm) || 
-                stock.includes(searchTerm)) {
-                row.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                row.classList.add('hidden');
+        for (var i = 0; i < rows.length; i++) {
+            var namaKolom = rows[i].getElementsByClassName("nama-target")[0];
+            if (namaKolom) {
+                var txtValue = namaKolom.textContent || namaKolom.innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    rows[i].style.display = "";
+                    foundCount++;
+                } else {
+                    rows[i].style.display = "none";
+                }
             }
         }
 
-        // Update search results text
-        if (searchTerm) {
-            searchResults.textContent = `Showing ${visibleCount} of ${totalProducts} products`;
-            searchResults.style.display = 'block';
+        var noResults = document.getElementById("noResults");
+        var mainTable = document.getElementById("mainTable");
+        
+        if (foundCount === 0 && filter !== "") {
+            noResults.style.display = "block";
+            mainTable.style.display = "none";
         } else {
-            searchResults.style.display = 'none';
-        }
-
-        // Show/hide no results message
-        if (visibleCount === 0 && searchTerm) {
-            noResults.style.display = 'block';
-            tableWrapper.style.display = 'none';
-        } else {
-            noResults.style.display = 'none';
-            tableWrapper.style.display = 'block';
+            noResults.style.display = "none";
+            mainTable.style.display = "table";
         }
     }
-
-    // Event listener for search input
-    searchInput.addEventListener('input', performSearch);
-
-    // Event listener for clear button
-    clearSearch.addEventListener('click', function() {
-        searchInput.value = '';
-        clearSearch.classList.remove('show');
-        performSearch();
-        searchInput.focus();
-    });
-
-    // Clear search on Escape key
-    searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            searchInput.value = '';
-            clearSearch.classList.remove('show');
-            performSearch();
-        }
-    });
 </script>
 @endsection
