@@ -343,7 +343,7 @@
 
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
-                <a href="{{ route('admin.products.create') }}" class="nav-link">
+                <a href="{{ route('admin.login') }}" class="nav-link">
                 <button class="logout-button">
                     <span>Logout</span>
                 </button>
