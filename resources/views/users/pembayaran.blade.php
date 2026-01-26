@@ -231,7 +231,7 @@
 
 <div class="pembayaran-container">
     <div class="pembayaran-header">
-        <h2>💳 Pembayaran</h2>
+        <h2>Pembayaran</h2>
         <p class="breadcrumb">
             <a href="/users">← Kembali ke Transaksi</a>
         </p>

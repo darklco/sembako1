@@ -32,7 +32,7 @@
     }
 
     h2::before {
-        content: '✏️';
+        /* content: '✏️'; */
         font-size: 30px;
     }
 
