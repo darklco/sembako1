@@ -113,25 +113,33 @@
         border-color: var(--accent);
     }
 
+    .product-image-wrapper {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .product-image { 
         width: 100%;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 6px;
-        margin-bottom: 12px;
-        background: #f5f5f5;
+        height: 100%;
+        object-fit: contain;
     }
 
     .no-image {
-        height: 100px;
-        background: #fafafa;
-        border-radius: 6px;
-        margin-bottom: 12px;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #d1d5db;
         font-size: 13px;
+        background: #fafafa;
     }
 
     .product-name {
@@ -362,11 +370,13 @@
             <div class="products-grid">
                 @foreach($products as $p)
                 <div class="product-card">
-                    @if($p->image)
-                        <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="product-image">
-                    @else
-                        <div class="no-image">No Image</div>
-                    @endif
+                    <div class="product-image-wrapper">
+                        @if($p->image)
+                            <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="product-image">
+                        @else
+                            <div class="no-image">No Image</div>
+                        @endif
+                    </div>
                     
                     <strong class="product-name">{{ $p->name }}</strong>
                     

@@ -122,11 +122,15 @@
 <div class="wrapper">
     <div class="sidebar">
         <div class="sidebar-brand">
-            <a href="/users/index">
+            <a href="">
                 <img src="{{ asset('images/logo.png') }}" alt="Sembakoku">
             </a>
         </div>
         <nav>
+             <a href="/users/products" class="nav-link">
+                <i class="fa-solid fa-cash-register"></i>
+                <span>Produk</span>
+            </a>
             <a href="/users" class="nav-link">
                 <i class="fa-solid fa-cash-register"></i>
                 <span>Transaksi</span>

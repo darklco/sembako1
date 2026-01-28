@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\user\KasirController;
+use App\Http\Controllers\user\UsersProductsController;
 use App\Http\Controllers\DashboardController;
 
 // =======================
@@ -50,6 +51,8 @@ Route::prefix('users')->name('users.')->group(function () {
     Route::get('/riwayat', [KasirController::class, 'riwayat'])->name('riwayat');
     Route::get('/pembayaran', [KasirController::class, 'pembayaran'])->name('pembayaran');
     
+    Route::get('/products', [UsersProductsController::class, 'index'])->name('products');
+    Route::get('/products/{product}', [UsersProductsController::class, 'show'])->name('showproducts');
    
     Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
 });

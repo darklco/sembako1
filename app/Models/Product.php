@@ -16,4 +16,9 @@ class Product extends Model
         'stock',
         'image'
     ];
+
+    public function show(Product $product)
+    {
+        return view('users.productsshow', compact('product'));
+    }
 }

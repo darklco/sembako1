@@ -65,6 +65,11 @@
     </div>
 
     <nav style="margin-top: 15px;">
+         <a href="{{ route('users.products') }}" class="nav-link {{ request()->routeIs('users.products') ? 'active' : '' }}">
+           <i class="fa-solid fa-bag" style="margin-right: 15px;"></i>
+            <span>Produk</span>
+        </a>
+
         <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
             <i class="fa-solid fa-file-invoice-dollar" style="margin-right: 15px;"></i>
             <span>Transaksi</span>
