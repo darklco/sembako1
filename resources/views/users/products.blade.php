@@ -44,8 +44,8 @@
 
     .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
     }
 
     .product-link {
@@ -58,7 +58,7 @@
     .product-card {
         background: var(--white);
         border: 1px solid var(--border);
-        border-radius: 12px;
+        border-radius: 10px;
         overflow: hidden;
         transition: all 0.3s ease;
         height: 100%;
@@ -68,8 +68,8 @@
     }
 
     .product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 24px rgba(100, 39, 20, 0.15);
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(100, 39, 20, 0.15);
         border-color: var(--accent);
     }
 
@@ -103,43 +103,47 @@
         justify-content: center;
         background: linear-gradient(135deg, #f8f8f8 0%, #e9e9e9 100%);
         color: #aaa;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 500;
     }
 
     .product-body {
-        padding: 20px;
+        padding: 16px;
         flex: 1;
         display: flex;
         flex-direction: column;
     }
 
     .product-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
         color: var(--primary);
-        margin: 0 0 12px 0;
+        margin: 0 0 10px 0;
         line-height: 1.4;
-        min-height: 50px;
+        min-height: 44px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .product-description {
-        font-size: 14px;
+        font-size: 13px;
         color: #666;
         line-height: 1.6;
-        margin: 0 0 16px 0;
+        margin: 0 0 12px 0;
         flex: 1;
     }
 
     .product-price {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 700;
         color: var(--accent);
         margin: 0;
     }
 
     .price-label {
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text-muted);
         font-weight: 500;
         margin-bottom: 4px;
@@ -150,13 +154,13 @@
     /* Badge/Tag styles (optional) */
     .product-badge {
         position: absolute;
-        top: 12px;
-        right: 12px;
+        top: 10px;
+        right: 10px;
         background: var(--accent);
         color: white;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 16px;
+        font-size: 11px;
         font-weight: 600;
         z-index: 1;
     }
@@ -190,31 +194,31 @@
         }
 
         .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 14px;
         }
 
         .product-body {
-            padding: 16px;
+            padding: 14px;
         }
 
         .product-title {
-            font-size: 16px;
+            font-size: 14px;
             min-height: auto;
         }
 
         .product-price {
-            font-size: 18px;
+            font-size: 17px;
         }
 
         .product-description {
-            font-size: 13px;
+            font-size: 12px;
         }
     }
 
     @media (max-width: 480px) {
         .products-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 </style>
@@ -244,10 +248,6 @@
 
                 <div class="product-body">
                     <h5 class="product-title">{{ $product->name }}</h5>
-                    
-                    {{-- <p class="product-description">
-                        {{ Str::limit($product->description, 80) }}
-                    </p> --}}
                     
                     <div>
                         <div class="price-label">Harga</div>

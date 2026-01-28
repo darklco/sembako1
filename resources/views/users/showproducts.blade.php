@@ -21,7 +21,7 @@
 
     .product-detail-container {
         padding: 40px 20px;
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
     }
 
@@ -61,15 +61,21 @@
 
     .product-detail-row {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 48px;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 32px;
         align-items: start;
     }
 
-    /* Image Section */
+    /* Description Section - Left */
+    .description-section {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    /* Image Section - Center */
     .product-image-section {
-        position: sticky;
-        top: 20px;
+        grid-column: 2;
+        grid-row: 1;
     }
 
     .product-image-wrapper {
@@ -103,15 +109,17 @@
         font-weight: 500;
     }
 
-    /* Info Section */
+    /* Info Section - Right */
     .product-info-section {
+        grid-column: 3;
+        grid-row: 1;
         display: flex;
         flex-direction: column;
         gap: 24px;
     }
 
     .product-name {
-        font-size: 32px;
+        font-size: 28px;
         font-weight: 700;
         color: var(--primary);
         margin: 0;
@@ -122,7 +130,6 @@
         background: linear-gradient(135deg, var(--primary) 0%, #4a1d0f 100%);
         padding: 24px;
         border-radius: 12px;
-        display: inline-block;
         box-shadow: 0 4px 12px rgba(100, 39, 20, 0.2);
     }
 
@@ -137,7 +144,7 @@
     }
 
     .product-price {
-        font-size: 36px;
+        font-size: 32px;
         font-weight: 700;
         color: var(--accent);
         margin: 0;
@@ -205,6 +212,7 @@
         padding: 24px;
         border-radius: 10px;
         border: 1px solid var(--border);
+        height: 100%;
     }
 
     .description-label {
@@ -224,23 +232,48 @@
         white-space: pre-line;
     }
 
-    /* Divider */
-    .divider {
-        height: 1px;
-        background: linear-gradient(to right, transparent, var(--border), transparent);
-        margin: 32px 0;
-    }
-
     /* Responsive */
-    @media (max-width: 992px) {
+    @media (max-width: 1200px) {
         .product-detail-row {
-            grid-template-columns: 1fr;
-            gap: 32px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .description-section {
+            grid-column: 1 / -1;
+            grid-row: 2;
         }
 
         .product-image-section {
-            position: relative;
-            top: 0;
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .product-info-section {
+            grid-column: 2;
+            grid-row: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-row {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .product-image-section {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .product-info-section {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .description-section {
+            grid-column: 1;
+            grid-row: 3;
         }
 
         .product-detail-card {
@@ -248,11 +281,11 @@
         }
 
         .product-name {
-            font-size: 26px;
+            font-size: 24px;
         }
 
         .product-price {
-            font-size: 30px;
+            font-size: 28px;
         }
     }
 
@@ -297,7 +330,22 @@
 
     <div class="product-detail-card">
         <div class="product-detail-row">
-            <!-- Image Section -->
+            <!-- Description Section - Left -->
+            <div class="description-section">
+                @if($product->description)
+                <div class="description-box">
+                    <p class="description-label">Deskripsi Produk</p>
+                    <p class="description-text">{{ $product->description }}</p>
+                </div>
+                @else
+                <div class="description-box">
+                    <p class="description-label">Deskripsi Produk</p>
+                    <p class="description-text" style="color: #cbd5e0;">Tidak ada deskripsi untuk produk ini.</p>
+                </div>
+                @endif
+            </div>
+
+            <!-- Image Section - Center -->
             <div class="product-image-section">
                 <div class="product-image-wrapper">
                     @if($product->image)
@@ -312,7 +360,7 @@
                 </div>
             </div>
 
-            <!-- Info Section -->
+            <!-- Info Section - Right (Name, Price, Stock) -->
             <div class="product-info-section">
                 <h2 class="product-name">{{ $product->name }}</h2>
 
@@ -323,14 +371,13 @@
                     </h4>
                 </div>
 
-                @if($product->description)
-                <div class="divider"></div>
-
-                <div class="description-box">
-                    <p class="description-label">Deskripsi Produk</p>
-                    <p class="description-text">{{ $product->description }}</p>
+                <div class="info-item">
+                    <p class="info-label">Ketersediaan Stok</p>
+                    <div class="stock-badge {{ $product->stock > 10 ? 'in-stock' : ($product->stock > 0 ? 'low-stock' : 'out-of-stock') }}">
+                        <span class="stock-indicator"></span>
+                        <span>{{ $product->stock }} Unit</span>
+                    </div>
                 </div>
-                @endif
             </div>
         </div>
     </div>
