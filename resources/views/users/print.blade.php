@@ -163,9 +163,8 @@
         <div class="receipt-header">
             <div class="store-name">SEMBAKOKU</div>
             <div class="store-info">
-                Point of Sale System<br>
-                Jl. Contoh No. 123, Surabaya<br>
-                Telp: (031) 1234-5678
+                Jl. Nginden Senolo. 23, Surabaya<br>
+                Telp: (+62) 1234-5678
             </div>
         </div>
 
