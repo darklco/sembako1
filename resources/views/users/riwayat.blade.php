@@ -95,6 +95,49 @@
         color: #2c7a7b;
         border: 1px solid #b2f5ea;
     }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-detail {
+        padding: 8px 16px;
+        background: var(--primary-mature);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-detail:hover {
+        background: #4a1d0f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(100, 39, 20, 0.2);
+    }
+
+    .btn-print {
+        padding: 8px 16px;
+        background: var(--accent-gold);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-print:hover {
+        background: #d17d04;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(236, 145, 5, 0.2);
+    }
 </style>
 
 <div class="riwayat-container">
@@ -131,6 +174,7 @@
                         <th>Produk</th>
                         <th>Total</th>
                         <th>Status</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,10 +192,20 @@
                         </td>
                         <td><span style="font-weight: 800;">Rp {{ number_format($trx->total, 0, ',', '.') }}</span></td>
                         <td><span class="status-badge">BERHASIL</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ route('users.detail', $trx->id) }}" class="btn-detail">
+                                    Detail
+                                </a>
+                                <a href="{{ route('users.print', $trx->id) }}" class="btn-print" target="_blank">
+                                    Cetak Struk
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" style="padding: 50px; text-align: center; color: var(--text-muted);">
+                        <td colspan="6" style="padding: 50px; text-align: center; color: var(--text-muted);">
                             Belum ada riwayat transaksi untuk hari ini.
                         </td>
                     </tr>

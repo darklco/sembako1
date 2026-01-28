@@ -6,7 +6,7 @@ use App\Models\Transaction;
 use App\Models\TransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon; // Tambahkan ini untuk urusan tanggal
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -31,7 +31,7 @@ class TransactionController extends Controller
     public function riwayatKasir()
     {
         // Logika: Ambil data yang HANYA dibuat tanggal hari ini
-        $transactions = Transaction::whereDate('created_at', Carbon::today())
+       $transactions = Transaction::whereDate('created_at', Carbon::today())
                         ->latest()
                         ->get();
 
@@ -107,4 +107,27 @@ class TransactionController extends Controller
         $transaction->load('items.product');
         return view('admin.showtransaction', compact('transaction'));
     }
+
+    /**
+     * Display transaction detail for users
+     */
+   public function detail($id)
+    {
+        $transaction = Transaction::with(['items.product'])
+            ->findOrFail($id);
+
+        return view('users.detail', compact('transaction'));
+    }
+
+    /**
+     * Print receipt
+     */
+    public function print($id)
+    {
+        $transaction = Transaction::with(['items.product'])
+            ->findOrFail($id);
+
+        return view('users.print', compact('transaction'));
+    }
+
 }

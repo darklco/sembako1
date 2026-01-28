@@ -183,6 +183,27 @@
         font-weight: 500;
     }
 
+    .search-wrapper {
+    margin-top: 20px;
+    max-width: 400px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(236, 145, 5, 0.2);
+    }
+
+
     /* Responsive */
     @media (max-width: 768px) {
         .products-container {
@@ -229,6 +250,15 @@
         <p class="page-subtitle">Temukan produk kebutuhan sembako berkualitas</p>
     </div>
 
+    <div class="search-wrapper">
+    <input 
+        type="text" 
+        id="searchInput" 
+        class="search-input"
+        placeholder="Cari produk..."
+    >
+    </div>
+
     @if($products->count() > 0)
     <div class="products-grid">
         @foreach($products as $product)
@@ -267,4 +297,27 @@
     </div>
     @endif
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const inputCari = document.getElementById('searchInput');
+
+    if (inputCari) {
+        inputCari.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                const namaProduk = card
+                    .querySelector('.product-title')
+                    .innerText
+                    .toLowerCase();
+
+                card.parentElement.style.display = namaProduk.includes(term)
+                    ? 'block'
+                    : 'none';
+            });
+        });
+    }
+});
+</script>
+
 @endsection
