@@ -57,3 +57,16 @@ Route::prefix('users')->name('users.')->group(function () {
 
     Route::post('/transaction', [TransactionController::class, 'store']) ->name('transaction.store');
 });
+// |----------------------
+// | USER / KASIR ROUTES
+// |----------------------
+Route::prefix('users')->name('users.')->group(function () {
+    Route::get('/', [UsersProductsController::class, 'index'])->name('products');
+    Route::get('/transaksi', [KasirController::class, 'index'])->name('index');
+    Route::get('/riwayat', [TransactionController::class, 'riwayatKasir'])->name('riwayat');
+    Route::get('/pembayaran', [KasirController::class, 'pembayaran'])->name('pembayaran');
+    Route::get('/transaction/{id}', [TransactionController::class, 'detail'])->name('detail');
+    Route::get('/transaction/{id}/print', [TransactionController::class, 'print'])->name('print');
+    Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
+    Route::get('/products/{product}', [UsersProductsController::class, 'show'])->name('showproducts');
+});
