@@ -93,7 +93,7 @@
 
 <style>
 .transactions-container {
-    padding: 40px;
+    padding: 0px;
     min-height: 100vh;
 }
 

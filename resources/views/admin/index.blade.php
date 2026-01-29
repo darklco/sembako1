@@ -5,7 +5,7 @@
 @section('styles')
 <style>
     .products-container {
-        padding: 40px;
+        padding: 0px;
         min-height: 100vh;
     }
 
@@ -65,7 +65,7 @@
     .search-input {
         width: 100%;
         max-width: 400px;
-        padding: 12px 16px;
+        padding: 12px 16\px;
         border: 1px solid #e8e8e8;
         border-radius: 6px;
         font-size: 14px;

@@ -66,7 +66,7 @@
 
     <nav style="margin-top: 15px;">
          <a href="{{ route('users.products') }}" class="nav-link {{ request()->routeIs('users.products') ? 'active' : '' }}">
-           <i class="fa-solid fa-bag" style="margin-right: 15px;"></i>
+            <i class="fa-solid fa-store" style="margin-right: 15px;"></i>
             <span>Produk</span>
         </a>
 

@@ -13,6 +13,7 @@ class Product extends Model
         'name',
         'description',
         'price',
+        'discount',
         'stock',
         'image'
     ];
@@ -21,4 +22,10 @@ class Product extends Model
     {
         return view('users.productsshow', compact('product'));
     }
+
+    public function getFinalPriceAttribute()
+    {
+        return $this->price - ($this->price * $this->discount / 100);
+    }
+
 }

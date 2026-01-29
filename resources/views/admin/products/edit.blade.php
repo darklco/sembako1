@@ -105,6 +105,90 @@
         font-size: 16px;
     }
 
+    /* Price Grid Layout */
+    .price-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    /* Discount Input Styling */
+    .discount-wrapper {
+        position: relative;
+    }
+
+    .discount-wrapper input {
+        padding-right: 45px;
+    }
+
+    .percent-symbol {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8b0000;
+        font-weight: 700;
+        font-size: 16px;
+        pointer-events: none;
+    }
+
+    .discount-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-left: 8px;
+    }
+
+    /* Price Preview */
+    .price-preview {
+        background: linear-gradient(135deg, #fffbf0 0%, #fff8e7 100%);
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #f3e5cc;
+    }
+
+    .preview-label {
+        font-size: 12px;
+        color: #642714;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
+    .preview-prices {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .preview-original {
+        font-size: 14px;
+        color: #999;
+        text-decoration: line-through;
+    }
+
+    .preview-discounted {
+        font-size: 20px;
+        font-weight: 800;
+        color: #ef4444;
+    }
+
+    .preview-savings {
+        font-size: 12px;
+        color: #059669;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
     .current-image {
         margin-top: 10px;
         padding: 10px;
@@ -212,6 +296,10 @@
             padding: 20px;
         }
 
+        .price-grid {
+            grid-template-columns: 1fr;
+        }
+
         .button-group {
             flex-direction: column;
         }
@@ -238,9 +326,39 @@
             <div class="help-text">Provide a detailed description of the product</div>
         </div>
 
-        <div class="form-group">
-            <label for="price">Price (Rp) <span class="required">*</span></label>
-            <input type="number" id="price" name="price" value="{{ $product->price }}" placeholder="0" min="0" required>
+        <div class="price-grid">
+            <div class="form-group">
+                <label for="price">Price (Rp) <span class="required">*</span></label>
+                <input type="number" id="price" name="price" value="{{ $product->price }}" placeholder="0" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="discount">
+                    Discount
+                    <span class="discount-badge">PROMO</span>
+                </label>
+                <div class="discount-wrapper">
+                    <input type="number" id="discount" name="discount" placeholder="0" min="0" max="100" value="{{ $product->discount ?? 0 }}">
+                    <span class="percent-symbol">%</span>
+                </div>
+                <div class="help-text">Enter discount percentage (0-100%)</div>
+            </div>
+        </div>
+
+        <!-- Price Preview -->
+        <div class="price-preview" id="pricePreview" style="display: {{ (isset($product->discount) && $product->discount > 0) ? 'block' : 'none' }};">
+            <div class="preview-label">Price Preview</div>
+            <div class="preview-prices">
+                <div class="preview-original">
+                    Original Price: Rp <span id="previewOriginal">{{ number_format($product->price, 0, ',', '.') }}</span>
+                </div>
+                <div class="preview-discounted">
+                    Discounted Price: Rp <span id="previewDiscounted">{{ number_format($product->price - ($product->price * ($product->discount ?? 0) / 100), 0, ',', '.') }}</span>
+                </div>
+                <div class="preview-savings">
+                    💰 You save: Rp <span id="previewSavings">{{ number_format(($product->price * ($product->discount ?? 0) / 100), 0, ',', '.') }}</span>
+                </div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -271,3 +389,51 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const priceInput = document.getElementById('price');
+    const discountInput = document.getElementById('discount');
+    const pricePreview = document.getElementById('pricePreview');
+    const previewOriginal = document.getElementById('previewOriginal');
+    const previewDiscounted = document.getElementById('previewDiscounted');
+    const previewSavings = document.getElementById('previewSavings');
+
+    function formatNumber(number) {
+        return number.toLocaleString('id-ID');
+    }
+
+    function updatePricePreview() {
+        const price = parseFloat(priceInput.value) || 0;
+        const discount = parseFloat(discountInput.value) || 0;
+
+        if (price > 0 && discount > 0) {
+            const discountAmount = price * discount / 100;
+            const discountedPrice = price - discountAmount;
+
+            pricePreview.style.display = 'block';
+            previewOriginal.textContent = formatNumber(price);
+            previewDiscounted.textContent = formatNumber(discountedPrice);
+            previewSavings.textContent = formatNumber(discountAmount);
+        } else {
+            pricePreview.style.display = 'none';
+        }
+    }
+
+    // Add event listeners
+    priceInput.addEventListener('input', updatePricePreview);
+    discountInput.addEventListener('input', updatePricePreview);
+
+    // Validate discount range
+    discountInput.addEventListener('blur', function() {
+        let value = parseFloat(this.value) || 0;
+        if (value < 0) value = 0;
+        if (value > 100) value = 100;
+        this.value = value;
+        updatePricePreview();
+    });
+
+    // Initial preview update on page load
+    updatePricePreview();
+});
+</script>

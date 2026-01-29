@@ -98,7 +98,7 @@
         </main>
     </div>
 
-    <script>
+<script>
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
