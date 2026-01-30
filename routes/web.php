@@ -7,6 +7,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\user\KasirController;
 use App\Http\Controllers\user\UsersProductsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
+
 
 // =======================
 // AUTH ADMIN
@@ -69,4 +71,5 @@ Route::prefix('users')->name('users.')->group(function () {
     Route::get('/transaction/{id}/print', [TransactionController::class, 'print'])->name('print');
     Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
     Route::get('/products/{product}', [UsersProductsController::class, 'show'])->name('showproducts');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notification');
 });

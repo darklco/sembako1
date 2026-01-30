@@ -110,6 +110,11 @@
             <i class="fa-solid fa-history"></i>
             <span>Riwayat</span>
         </a>
+        <a href="{{ route('users.notification') }}"
+           class="{{ Request::is('users/notifikasi*') ? 'active' : '' }}">
+            <i class="fa-solid fa-bell"></i>
+            <span>Notifikasi</span>
+        </a>
     </nav>
 
 </div>

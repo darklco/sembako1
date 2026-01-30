@@ -41,6 +41,10 @@ class ProductsController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil ditambahkan');
+
+            if (!empty($data['discount']) && $data['discount'] > 0) {
+            $data['discount'] = now();
+        }
     }
 
     // FORM EDIT
@@ -72,6 +76,15 @@ class ProductsController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil diupdate');
+
+            if (
+                isset($data['discount']) &&
+                $data['discount'] > 0 &&
+                $product->discount != $data['discount']
+            ) {
+                $data['discount'] = now();
+            }
+
     }
 
     // DELETE

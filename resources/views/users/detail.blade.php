@@ -878,4 +878,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-@endsection
+@endsectionx
