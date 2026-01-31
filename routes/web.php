@@ -8,6 +8,7 @@ use App\Http\Controllers\user\KasirController;
 use App\Http\Controllers\user\UsersProductsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AdminProfileController;
 
 
 // =======================
@@ -37,6 +38,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
       // products CRUD
     Route::resource('products', ProductsController::class)->middleware('auth');
+
+    Route::get('/profile', [AdminProfileController::class, 'edit'])->middleware('auth')->name('profile.edit');
+    Route::put('/profile', [AdminProfileController::class, 'update'])->middleware('auth')->name('profile.update');
+   
 });
 
 // |-----------------

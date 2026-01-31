@@ -7,7 +7,6 @@
     <title>@yield('title', 'Admin Panel - Dashboard')</title>
     
     <style>
-        /* Reset & Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -21,26 +20,24 @@
             overflow-x: hidden;
         }
         
-        /* Wrapper menggunakan Flexbox untuk menyejajarkan Sidebar dan Content */
         .main-wrapper {
             display: flex;
             min-height: 100vh;
             width: 100%;
+            position: relative; /* Tambahkan ini */
         }
 
-        /* Main Content Area - Bagian Utama yang Menghitung Sisa Lebar Layar */
         .main-content {
-            flex: 1; /* Mengambil semua sisa ruang di kanan sidebar */
-            margin-left: 220px; /* Harus sama dengan lebar sidebar */
-            padding: 0;
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px; /* Tambahkan padding */
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
             background-color: #f8fafc;
+            transition: margin-left 0.3s ease;
+            position: relative; /* Tambahkan ini */
+            z-index: 1; /* Pastikan di atas overlay */
         }
 
-        /* Sidebar Toggle Button (Hanya Muncul di Mobile) */
         .sidebar-toggle {
             display: none;
             position: fixed;
@@ -56,38 +53,37 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        /* Overlay untuk Mobile */
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.5);
             z-index: 998;
+            pointer-events: none; /* PENTING: Nonaktifkan click di desktop */
         }
 
-        /* Responsive Design */
+        .sidebar-overlay.active {
+            pointer-events: auto; /* Aktifkan hanya saat mobile menu terbuka */
+        }
+
         @media (max-width: 768px) {
             .main-content {
-                margin-left: 0; /* Sidebar tersembunyi, content jadi full */
+                margin-left: 0;
                 width: 100%;
+                padding: 24px;
             }
 
             .sidebar-toggle {
                 display: block;
             }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
         }
 
-        /* Area untuk CSS tambahan dari halaman lain */
         @yield('styles')
     </style>
 </head>
 <body>
     <div class="main-wrapper">
-        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <button class="sidebar-toggle" id="sidebarToggle" type="button">☰</button>
 
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -98,23 +94,30 @@
         </main>
     </div>
 
-<script>
+    <script>
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-        // Pastikan element ID 'sidebar' ada di file sidebar.blade.php kamu
         if (sidebarToggle && sidebar && sidebarOverlay) {
-            sidebarToggle.addEventListener('click', function() {
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault(); // Tambahkan ini
+                e.stopPropagation(); // Tambahkan ini
                 sidebar.classList.toggle('active');
                 sidebarOverlay.classList.toggle('active');
             });
 
-            sidebarOverlay.addEventListener('click', function() {
+            sidebarOverlay.addEventListener('click', function(e) {
+                e.preventDefault(); // Tambahkan ini
                 sidebar.classList.remove('active');
                 sidebarOverlay.classList.remove('active');
             });
         }
+
+        // Debug: Cek apakah ada event listener yang tidak diinginkan
+        document.addEventListener('click', function(e) {
+            console.log('Clicked element:', e.target);
+        }, true);
     </script>
 
     @yield('scripts')

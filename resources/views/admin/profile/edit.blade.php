@@ -3,8 +3,8 @@
 @section('content')
 <div class="page-container">
     <div class="page-header">
-        <h1>Add Product</h1>
-        <p>Tambahkan produk baru ke inventory</p>
+        <h1>Update Profil</h1>
+        <p>Perbarui informasi dan foto profil Anda</p>
     </div>
 
     <!-- Alert Success -->
@@ -40,85 +40,80 @@
     @endif
 
     <div class="form-container">
-        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            
+            @method('PUT')
+
             <div class="form-grid">
                 <!-- Left Column -->
                 <div class="form-column">
                     <div class="form-group">
-                        <label for="name">Nama Produk <span class="required">*</span></label>
-                        <input type="text" id="name" name="name" placeholder="Masukkan nama produk" value="{{ old('name') }}" required>
+                        <label for="name">Nama <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" placeholder="Masukkan nama Anda" value="{{ old('name', $user->name) }}" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="description">Deskripsi <span class="required">*</span></label>
-                        <textarea id="description" name="description" placeholder="Masukkan deskripsi produk" rows="5" required>{{ old('description') }}</textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="price">Harga (Rp) <span class="required">*</span></label>
-                            <input type="number" id="price" name="price" placeholder="0" min="0" value="{{ old('price') }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="stock">Stok <span class="required">*</span></label>
-                            <input type="number" id="stock" name="stock" placeholder="0" min="0" value="{{ old('stock') }}" required>
-                        </div>
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="Masukkan email Anda" value="{{ old('email', $user->email) }}" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="discount">Diskon (%)</label>
-                        <input type="number" id="discount" name="discount" placeholder="0" min="0" max="100" value="{{ old('discount', 0) }}">
-                        <span class="help-text">Masukkan nilai diskon dalam persen (0-100)</span>
-                    </div>
-
-                    <!-- Price Preview -->
-                    <div class="price-preview" id="pricePreview" style="display: none;">
-                        <div class="price-preview-item">
-                            <span class="preview-label">Harga Normal:</span>
-                            <span class="preview-value" id="normalPrice">Rp 0</span>
-                        </div>
-                        <div class="price-preview-item">
-                            <span class="preview-label">Diskon:</span>
-                            <span class="preview-value discount-value" id="discountAmount">- Rp 0</span>
-                        </div>
-                        <div class="price-preview-item final">
-                            <span class="preview-label">Harga Setelah Diskon:</span>
-                            <span class="preview-value final-price" id="finalPrice">Rp 0</span>
+                        <label>Nama Saat Ini</label>
+                        <div class="info-box">
+                            <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16v-6m0 0V5m0 6h6m-6 0H7"/>
+                            </svg>
+                            <div class="info-text">
+                                <span class="info-label">Nama</span>
+                                <span class="info-value">{{ $user->name }}</span>
+                            </div>
+                            <div class="info-text">
+                                <span class="info-label">Email</span>
+                                <span class="info-value">{{ $user->email }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column - Image Upload -->
+                <!-- Right Column - Photo Upload -->
                 <div class="form-column">
                     <div class="form-group">
-                        <label>Gambar Produk</label>
+                        <label>Foto Profil</label>
                         <div class="image-upload-wrapper">
-                            <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-                            <label for="image" class="image-upload-label" id="uploadLabel">
+                            <input type="file" id="profile_photo" name="profile_photo" accept="image/*" onchange="previewImage(event)">
+
+                            <!-- Upload Label (shown when no image) -->
+                            <label for="profile_photo" class="image-upload-label" id="uploadLabel" style="@if($user->profile_photo) display: none; @endif">
                                 <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                 </svg>
-                                <span class="upload-text">Klik untuk upload gambar</span>
+                                <span class="upload-text">Klik untuk upload foto</span>
                                 <span class="upload-hint">PNG, JPG, GIF (Max 2MB)</span>
                             </label>
-                            <div class="image-preview" id="imagePreview" style="display: none;">
-                                <img id="preview" src="" alt="Preview">
+
+                            <!-- Preview (shown when image exists) -->
+                            <div class="image-preview" id="imagePreview" style="@if(!$user->profile_photo) display: none; @endif">
+                                <img id="preview" src="@if($user->profile_photo) {{ asset('storage/' . $user->profile_photo) }} @endif" alt="Preview Foto">
                                 <button type="button" class="remove-image" onclick="removeImage()">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
                                 </button>
+                                <label for="profile_photo" class="change-photo-btn">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                    </svg>
+                                    Ganti Foto
+                                </label>
                             </div>
                         </div>
+                        <span class="help-text">Disarankan resolusi minimal 200x200px</span>
                     </div>
                 </div>
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
                     <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -128,7 +123,7 @@
                     <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Simpan Produk
+                    Simpan Perubahan
                 </button>
             </div>
         </form>
@@ -171,14 +166,13 @@
     }
 
     @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+        from { opacity: 1; transform: translateY(0); }
+        to   { opacity: 0; transform: translateY(-10px); }
     }
 
     .alert-success {
@@ -197,13 +191,8 @@
         flex-shrink: 0;
     }
 
-    .alert-success .alert-icon {
-        color: #16a34a;
-    }
-
-    .alert-error .alert-icon {
-        color: #dc2626;
-    }
+    .alert-success .alert-icon { color: #16a34a; }
+    .alert-error .alert-icon  { color: #dc2626; }
 
     .alert-content {
         flex: 1;
@@ -215,13 +204,8 @@
         margin-bottom: 4px;
     }
 
-    .alert-success .alert-content strong {
-        color: #16a34a;
-    }
-
-    .alert-error .alert-content strong {
-        color: #dc2626;
-    }
+    .alert-success .alert-content strong { color: #16a34a; }
+    .alert-error .alert-content strong  { color: #dc2626; }
 
     .alert-content p,
     .alert-content ul {
@@ -286,12 +270,6 @@
         gap: 20px;
     }
 
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
     .form-group {
         display: flex;
         flex-direction: column;
@@ -315,8 +293,7 @@
     }
 
     input[type="text"],
-    input[type="number"],
-    textarea {
+    input[type="email"] {
         width: 100%;
         padding: 12px 16px;
         border: 1px solid #e5e5e5;
@@ -325,60 +302,54 @@
         font-family: inherit;
         transition: all 0.2s;
         box-sizing: border-box;
+        background: #fff;
     }
 
     input[type="text"]:focus,
-    input[type="number"]:focus,
-    textarea:focus {
+    input[type="email"]:focus {
         outline: none;
         border-color: #dc2626;
         box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
-    textarea {
-        resize: vertical;
-    }
-
-    /* Price Preview */
-    .price-preview {
+    /* Info Box */
+    .info-box {
         background: #f9fafb;
         border: 1px solid #e5e7eb;
         border-radius: 8px;
         padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
-    .price-preview-item {
+    .info-box svg.info-icon {
+        display: none;
+    }
+
+    .info-text {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e5e7eb;
     }
 
-    .price-preview-item.final {
-        border-top: 2px solid #dc2626;
-        margin-top: 8px;
-        padding-top: 12px;
+    .info-text:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
     }
 
-    .preview-label {
+    .info-label {
         font-size: 13px;
-        color: #525252;
+        color: #737373;
         font-weight: 500;
     }
 
-    .preview-value {
-        font-size: 14px;
-        font-weight: 600;
+    .info-value {
+        font-size: 13px;
         color: #1a1a1a;
-    }
-
-    .discount-value {
-        color: #dc2626;
-    }
-
-    .final-price {
-        color: #16a34a;
-        font-size: 18px;
+        font-weight: 600;
     }
 
     /* Image Upload */
@@ -438,7 +409,7 @@
 
     .image-preview img {
         width: 100%;
-        height: 400px;
+        height: 300px;
         object-fit: cover;
         display: block;
     }
@@ -466,8 +437,36 @@
     }
 
     .remove-image svg {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .change-photo-btn {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px;
+        background: rgba(26, 26, 26, 0.6);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-decoration: none;
+    }
+
+    .change-photo-btn:hover {
+        background: rgba(26, 26, 26, 0.78);
+    }
+
+    .change-photo-btn svg {
+        width: 16px;
+        height: 16px;
     }
 
     /* Form Actions */
@@ -491,6 +490,7 @@
         border: none;
         cursor: pointer;
         transition: all 0.2s;
+        font-family: inherit;
     }
 
     .btn-icon {
@@ -526,10 +526,6 @@
             grid-template-columns: 1fr;
         }
 
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-
         .form-actions {
             flex-direction: column-reverse;
         }
@@ -556,7 +552,7 @@
     }
 
     function removeImage() {
-        document.getElementById('image').value = '';
+        document.getElementById('profile_photo').value = '';
         document.getElementById('imagePreview').style.display = 'none';
         document.getElementById('uploadLabel').style.display = 'flex';
     }
@@ -577,31 +573,7 @@
         }
     }
 
-    // Calculate price with discount
-    function calculatePrice() {
-        const price = parseFloat(document.getElementById('price').value) || 0;
-        const discount = parseFloat(document.getElementById('discount').value) || 0;
-        
-        if (price > 0) {
-            const discountAmount = price * (discount / 100);
-            const finalPrice = price - discountAmount;
-            
-            document.getElementById('normalPrice').textContent = 'Rp ' + price.toLocaleString('id-ID');
-            document.getElementById('discountAmount').textContent = '- Rp ' + discountAmount.toLocaleString('id-ID');
-            document.getElementById('finalPrice').textContent = 'Rp ' + finalPrice.toLocaleString('id-ID');
-            document.getElementById('pricePreview').style.display = 'block';
-        } else {
-            document.getElementById('pricePreview').style.display = 'none';
-        }
-    }
-
-    // Add event listeners
-    document.getElementById('price').addEventListener('input', calculatePrice);
-    document.getElementById('discount').addEventListener('input', calculatePrice);
-
     // Auto close success alert after 5 seconds
-    setTimeout(() => {
-        closeAlert();
-    }, 5000);
+    setTimeout(() => { closeAlert(); }, 5000);
 </script>
 @endsection

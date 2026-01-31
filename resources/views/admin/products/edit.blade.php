@@ -1,439 +1,699 @@
 @extends('admin.layouts.app')
+
+@section('content')
+<div class="page-container">
+    <div class="page-header">
+        <h1>Edit Product</h1>
+        <p>Perbarui informasi produk</p>
+    </div>
+
+    <!-- Alert Success -->
+    @if(session('success'))
+    <div class="alert alert-success" id="successAlert">
+        <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="alert-content">
+            <strong>Berhasil!</strong>
+            <p>{{ session('success') }}</p>
+        </div>
+        <button class="alert-close" onclick="closeAlert()">×</button>
+    </div>
+    @endif
+
+    <!-- Alert Error -->
+    @if($errors->any())
+    <div class="alert alert-error" id="errorAlert">
+        <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="alert-content">
+            <strong>Error!</strong>
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        <button class="alert-close" onclick="closeErrorAlert()">×</button>
+    </div>
+    @endif
+
+    <div class="form-container">
+        <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            
+            <div class="form-grid">
+                <!-- Left Column -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="name">Nama Produk <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" placeholder="Masukkan nama produk" value="{{ old('name', $product->name) }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Deskripsi <span class="required">*</span></label>
+                        <textarea id="description" name="description" placeholder="Masukkan deskripsi produk" rows="5" required>{{ old('description', $product->description) }}</textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Harga (Rp) <span class="required">*</span></label>
+                            <input type="number" id="price" name="price" placeholder="0" min="0" value="{{ old('price', $product->price) }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stock">Stok <span class="required">*</span></label>
+                            <input type="number" id="stock" name="stock" placeholder="0" min="0" value="{{ old('stock', $product->stock) }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discount">Diskon (%)</label>
+                        <input type="number" id="discount" name="discount" placeholder="0" min="0" max="100" value="{{ old('discount', $product->discount ?? 0) }}">
+                        <span class="help-text">Masukkan nilai diskon dalam persen (0-100)</span>
+                    </div>
+
+                    <!-- Price Preview -->
+                    <div class="price-preview" id="pricePreview">
+                        <div class="price-preview-item">
+                            <span class="preview-label">Harga Normal:</span>
+                            <span class="preview-value" id="normalPrice">Rp 0</span>
+                        </div>
+                        <div class="price-preview-item">
+                            <span class="preview-label">Diskon:</span>
+                            <span class="preview-value discount-value" id="discountAmount">- Rp 0</span>
+                        </div>
+                        <div class="price-preview-item final">
+                            <span class="preview-label">Harga Setelah Diskon:</span>
+                            <span class="preview-value final-price" id="finalPrice">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Image Upload -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label>Gambar Produk</label>
+                        <div class="image-upload-wrapper">
+                            <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                            
+                            @if($product->image)
+                            <!-- Current Image -->
+                            <div class="image-preview" id="currentImage">
+                                <img id="currentPreview" src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}">
+                                <div class="image-badge">Gambar Saat Ini</div>
+                                <button type="button" class="change-image" onclick="triggerFileInput()">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    Ganti Gambar
+                                </button>
+                            </div>
+                            @else
+                            <!-- Upload Label if no image -->
+                            <label for="image" class="image-upload-label" id="uploadLabel">
+                                <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span class="upload-text">Klik untuk upload gambar</span>
+                                <span class="upload-hint">PNG, JPG, GIF (Max 2MB)</span>
+                            </label>
+                            @endif
+                            
+                            <!-- New Image Preview -->
+                            <div class="image-preview" id="newImagePreview" style="display: none;">
+                                <img id="preview" src="" alt="Preview">
+                                <div class="image-badge new-badge">Gambar Baru</div>
+                                <button type="button" class="remove-image" onclick="removeImage()">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <span class="help-text">Kosongkan jika tidak ingin mengubah gambar</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Batal
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Produk
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <style>
-    body {
-        background-color: #ffffff;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        padding: 20px;
-        margin: 0;
-    }
-
-    .container {
-        max-width: 600px;
+    .page-container {
+        max-width: 1200px;
         margin: 0 auto;
-        background-color: white;
-        padding: 35px;
-        border-radius: 15px;
-        /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+        padding: 32px;
     }
 
-    .header {
-        border-bottom: 3px solid #8b0000;
-        padding-bottom: 15px;
-        margin-bottom: 30px;
+    .page-header {
+        margin-bottom: 32px;
     }
 
-    h2 {
-        color: #642714;
+    .page-header h1 {
         font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0 0 8px 0;
+    }
+
+    .page-header p {
+        font-size: 15px;
+        color: #737373;
         margin: 0;
+    }
+
+    /* Alert Styles */
+    .alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-success {
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+    }
+
+    .alert-error {
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+    }
+
+    .alert-icon {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .alert-success .alert-icon {
+        color: #16a34a;
+    }
+
+    .alert-error .alert-icon {
+        color: #dc2626;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-content strong {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .alert-success .alert-content strong {
+        color: #16a34a;
+    }
+
+    .alert-error .alert-content strong {
+        color: #dc2626;
+    }
+
+    .alert-content p,
+    .alert-content ul {
+        margin: 0;
+        font-size: 14px;
+        color: #525252;
+    }
+
+    .alert-content ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .alert-content li {
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .alert-content li::before {
+        content: "•";
+        position: absolute;
+        left: 8px;
+    }
+
+    .alert-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #737373;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        justify-content: center;
+        transition: color 0.2s;
     }
 
-    h2::before {
-        /* content: '✏️'; */
-        font-size: 30px;
+    .alert-close:hover {
+        color: #1a1a1a;
+    }
+
+    /* Form Container */
+    .form-container {
+        background: #ffffff;
+        border: 1px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 32px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 32px;
+        margin-bottom: 32px;
+    }
+
+    .form-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
     }
 
     .form-group {
-        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
 
-    label {
-        display: block;
-        color: #642714;
-        font-weight: 600;
+    .form-group label {
         font-size: 14px;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .help-text {
+        font-size: 12px;
+        color: #737373;
+        font-style: italic;
     }
 
     input[type="text"],
     input[type="number"],
     textarea {
         width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #982626;
+        padding: 12px 16px;
+        border: 1px solid #e5e5e5;
         border-radius: 8px;
         font-size: 14px;
         font-family: inherit;
-        transition: all 0.3s ease;
+        transition: all 0.2s;
         box-sizing: border-box;
-        background-color: #fffbf0;
     }
 
     input[type="text"]:focus,
     input[type="number"]:focus,
     textarea:focus {
         outline: none;
-        border-color: #8b0000;
-        background-color: white;
-        box-shadow: 0 0 0 3px rgba(229, 132, 35, 0.1);
+        border-color: #dc2626;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
     textarea {
         resize: vertical;
-        min-height: 100px;
-    }
-
-    input[type="file"] {
-        width: 100%;
-        padding: 10px;
-        border: 2px dashed #8b0000;
-        border-radius: 8px;
-        font-size: 13px;
-        background-color: #fffbf0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    input[type="file"]:hover {
-        border-color: #8b0000;
-        background-color: #fff8e7;
-    }
-
-    .file-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .file-label::before {
-        content: '📷';
-        font-size: 16px;
-    }
-
-    /* Price Grid Layout */
-    .price-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-    }
-
-    /* Discount Input Styling */
-    .discount-wrapper {
-        position: relative;
-    }
-
-    .discount-wrapper input {
-        padding-right: 45px;
-    }
-
-    .percent-symbol {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #8b0000;
-        font-weight: 700;
-        font-size: 16px;
-        pointer-events: none;
-    }
-
-    .discount-badge {
-        display: inline-block;
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-left: 8px;
     }
 
     /* Price Preview */
     .price-preview {
-        background: linear-gradient(135deg, #fffbf0 0%, #fff8e7 100%);
-        padding: 15px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
         border-radius: 8px;
-        margin-top: 15px;
-        border: 1px solid #f3e5cc;
+        padding: 16px;
+    }
+
+    .price-preview-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+    }
+
+    .price-preview-item.final {
+        border-top: 2px solid #dc2626;
+        margin-top: 8px;
+        padding-top: 12px;
     }
 
     .preview-label {
-        font-size: 12px;
-        color: #642714;
-        font-weight: 600;
-        margin-bottom: 8px;
-        text-transform: uppercase;
+        font-size: 13px;
+        color: #525252;
+        font-weight: 500;
     }
 
-    .preview-prices {
+    .preview-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .discount-value {
+        color: #dc2626;
+    }
+
+    .final-price {
+        color: #16a34a;
+        font-size: 18px;
+    }
+
+    /* Image Upload */
+    .image-upload-wrapper {
+        position: relative;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .image-upload-label {
         display: flex;
         flex-direction: column;
-        gap: 6px;
-    }
-
-    .preview-original {
-        font-size: 14px;
-        color: #999;
-        text-decoration: line-through;
-    }
-
-    .preview-discounted {
-        font-size: 20px;
-        font-weight: 800;
-        color: #ef4444;
-    }
-
-    .preview-savings {
-        font-size: 12px;
-        color: #059669;
-        font-weight: 600;
-        display: flex;
         align-items: center;
-        gap: 4px;
-    }
-
-    .current-image {
-        margin-top: 10px;
-        padding: 10px;
-        background-color: #fff8e7;
+        justify-content: center;
+        padding: 48px 24px;
+        border: 2px dashed #e5e5e5;
         border-radius: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        background: #fafafa;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
     }
 
-    .current-image img {
-        width: 80px;
-        height: 80px;
+    .image-upload-label:hover {
+        border-color: #dc2626;
+        background: #fef2f2;
+    }
+
+    .upload-icon {
+        width: 48px;
+        height: 48px;
+        color: #737373;
+        margin-bottom: 12px;
+    }
+
+    .upload-text {
+        font-size: 14px;
+        font-weight: 500;
+        color: #1a1a1a;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .upload-hint {
+        font-size: 12px;
+        color: #737373;
+    }
+
+    .image-preview {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e5e5e5;
+    }
+
+    .image-preview img {
+        width: 100%;
+        height: 400px;
         object-fit: cover;
+        display: block;
+    }
+
+    .image-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 6px 12px;
         border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .current-image-text {
         font-size: 12px;
-        color: #642714;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #f0f0f0;
-    }
-
-    .btn-update {
-        background: linear-gradient(135deg, #8b0000 0%, #982626 100%);
-        color: white;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
         font-weight: 600;
+    }
+
+    .new-badge {
+        background: rgba(220, 38, 38, 0.9);
+    }
+
+    .change-image {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        color: #1a1a1a;
+        font-size: 13px;
+        font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(229, 132, 35, 0.3);
-        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .change-image:hover {
+        background: #ffffff;
+        border-color: #dc2626;
+        color: #dc2626;
+    }
+
+    .change-image svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .remove-image {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+        background: rgba(220, 38, 38, 0.9);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .remove-image:hover {
+        background: #dc2626;
+        transform: scale(1.1);
+    }
+
+    .remove-image svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding-top: 24px;
+        border-top: 1px solid #e5e5e5;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
         gap: 8px;
-    }
-
-    .btn-update:hover {
-        background: linear-gradient(135deg, #8b0000 0%, #982626 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(229, 132, 35, 0.4);
-    }
-
-    .btn-update::before {
-        content: '✓';
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    .btn-cancel {
-        background: linear-gradient(135deg, #af9b74 0%, #c0b090 100%);
-        color: white;
         padding: 12px 24px;
-        border: none;
         border-radius: 8px;
         font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        font-weight: 500;
         text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
     }
 
-    .btn-cancel:hover {
-        background: linear-gradient(135deg, #9a8766 0%, #ab9d7f 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(175, 155, 116, 0.3);
+    .btn-icon {
+        width: 18px;
+        height: 18px;
     }
 
-    .btn-cancel::before {
-        content: '←';
-        font-size: 18px;
+    .btn-primary {
+        background: #dc2626;
+        color: white;
     }
 
-    .required {
-        color: #ed6325;
-        margin-left: 3px;
+    .btn-primary:hover {
+        background: #b91c1c;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
     }
 
-    .help-text {
-        font-size: 12px;
-        color: #999;
-        margin-top: 5px;
-        font-style: italic;
+    .btn-secondary {
+        background: white;
+        color: #737373;
+        border: 1px solid #e5e5e5;
     }
 
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .container {
-            padding: 20px;
-        }
+    .btn-secondary:hover {
+        border-color: #d4d4d4;
+        color: #1a1a1a;
+    }
 
-        .price-grid {
+    /* Responsive */
+    @media (max-width: 968px) {
+        .form-grid {
             grid-template-columns: 1fr;
         }
 
-        .button-group {
-            flex-direction: column;
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
         }
     }
 </style>
 
-<div class="container">
-    <div class="header">
-        <h2>Edit Product</h2>
-    </div>
-
-    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-
-        <div class="form-group">
-            <label for="name">Name <span class="required">*</span></label>
-            <input type="text" id="name" name="name" value="{{ $product->name }}" placeholder="Enter product name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="description">Description <span class="required">*</span></label>
-            <textarea id="description" name="description" placeholder="Enter product description" required>{{ $product->description }}</textarea>
-            <div class="help-text">Provide a detailed description of the product</div>
-        </div>
-
-        <div class="price-grid">
-            <div class="form-group">
-                <label for="price">Price (Rp) <span class="required">*</span></label>
-                <input type="number" id="price" name="price" value="{{ $product->price }}" placeholder="0" min="0" required>
-            </div>
-
-            <div class="form-group">
-                <label for="discount">
-                    Discount
-                    <span class="discount-badge">PROMO</span>
-                </label>
-                <div class="discount-wrapper">
-                    <input type="number" id="discount" name="discount" placeholder="0" min="0" max="100" value="{{ $product->discount ?? 0 }}">
-                    <span class="percent-symbol">%</span>
-                </div>
-                <div class="help-text">Enter discount percentage (0-100%)</div>
-            </div>
-        </div>
-
-        <!-- Price Preview -->
-        <div class="price-preview" id="pricePreview" style="display: {{ (isset($product->discount) && $product->discount > 0) ? 'block' : 'none' }};">
-            <div class="preview-label">Price Preview</div>
-            <div class="preview-prices">
-                <div class="preview-original">
-                    Original Price: Rp <span id="previewOriginal">{{ number_format($product->price, 0, ',', '.') }}</span>
-                </div>
-                <div class="preview-discounted">
-                    Discounted Price: Rp <span id="previewDiscounted">{{ number_format($product->price - ($product->price * ($product->discount ?? 0) / 100), 0, ',', '.') }}</span>
-                </div>
-                <div class="preview-savings">
-                    💰 You save: Rp <span id="previewSavings">{{ number_format(($product->price * ($product->discount ?? 0) / 100), 0, ',', '.') }}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="stock">Stock <span class="required">*</span></label>
-            <input type="number" id="stock" name="stock" value="{{ $product->stock }}" placeholder="0" min="0" required>
-            <div class="help-text">Number of items available</div>
-        </div>
-
-        <div class="form-group">
-            <label for="image" class="file-label">Image</label>
-            <input type="file" id="image" name="image" accept="image/*">
-            <div class="help-text">Supported formats: JPG, PNG, GIF (Max 2MB) - Leave empty to keep current image</div>
-            
-            @if($product->image)
-                <div class="current-image">
-                    <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}">
-                    <div class="current-image-text">
-                        <strong>Current Image</strong><br>
-                        Upload a new image to replace this one
-                    </div>
-                </div>
-            @endif
-        </div>
-
-        <div class="button-group">
-            <a href="{{ route('admin.products.index') }}" class="btn-cancel">Cancel</a>
-            <button type="submit" class="btn-update">Update Product</button>
-        </div>
-    </form>
-</div>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const priceInput = document.getElementById('price');
-    const discountInput = document.getElementById('discount');
-    const pricePreview = document.getElementById('pricePreview');
-    const previewOriginal = document.getElementById('previewOriginal');
-    const previewDiscounted = document.getElementById('previewDiscounted');
-    const previewSavings = document.getElementById('previewSavings');
-
-    function formatNumber(number) {
-        return number.toLocaleString('id-ID');
+    function triggerFileInput() {
+        document.getElementById('image').click();
     }
 
-    function updatePricePreview() {
-        const price = parseFloat(priceInput.value) || 0;
-        const discount = parseFloat(discountInput.value) || 0;
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('newImagePreview').style.display = 'block';
+                
+                // Hide current image if exists
+                const currentImage = document.getElementById('currentImage');
+                if (currentImage) {
+                    currentImage.style.display = 'none';
+                }
+                
+                // Hide upload label if exists
+                const uploadLabel = document.getElementById('uploadLabel');
+                if (uploadLabel) {
+                    uploadLabel.style.display = 'none';
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
 
-        if (price > 0 && discount > 0) {
-            const discountAmount = price * discount / 100;
-            const discountedPrice = price - discountAmount;
-
-            pricePreview.style.display = 'block';
-            previewOriginal.textContent = formatNumber(price);
-            previewDiscounted.textContent = formatNumber(discountedPrice);
-            previewSavings.textContent = formatNumber(discountAmount);
+    function removeImage() {
+        document.getElementById('image').value = '';
+        document.getElementById('newImagePreview').style.display = 'none';
+        
+        // Show current image again if exists
+        const currentImage = document.getElementById('currentImage');
+        if (currentImage) {
+            currentImage.style.display = 'block';
         } else {
-            pricePreview.style.display = 'none';
+            // Show upload label if no current image
+            const uploadLabel = document.getElementById('uploadLabel');
+            if (uploadLabel) {
+                uploadLabel.style.display = 'flex';
+            }
+        }
+    }
+
+    function closeAlert() {
+        const alert = document.getElementById('successAlert');
+        if (alert) {
+            alert.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }
+
+    function closeErrorAlert() {
+        const alert = document.getElementById('errorAlert');
+        if (alert) {
+            alert.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }
+
+    // Calculate price with discount
+    function calculatePrice() {
+        const price = parseFloat(document.getElementById('price').value) || 0;
+        const discount = parseFloat(document.getElementById('discount').value) || 0;
+        
+        if (price > 0) {
+            const discountAmount = price * (discount / 100);
+            const finalPrice = price - discountAmount;
+            
+            document.getElementById('normalPrice').textContent = 'Rp ' + price.toLocaleString('id-ID');
+            document.getElementById('discountAmount').textContent = '- Rp ' + discountAmount.toLocaleString('id-ID');
+            document.getElementById('finalPrice').textContent = 'Rp ' + finalPrice.toLocaleString('id-ID');
         }
     }
 
     // Add event listeners
-    priceInput.addEventListener('input', updatePricePreview);
-    discountInput.addEventListener('input', updatePricePreview);
+    document.getElementById('price').addEventListener('input', calculatePrice);
+    document.getElementById('discount').addEventListener('input', calculatePrice);
 
-    // Validate discount range
-    discountInput.addEventListener('blur', function() {
-        let value = parseFloat(this.value) || 0;
-        if (value < 0) value = 0;
-        if (value > 100) value = 100;
-        this.value = value;
-        updatePricePreview();
-    });
+    // Calculate on page load
+    window.addEventListener('load', calculatePrice);
 
-    // Initial preview update on page load
-    updatePricePreview();
-});
+    // Auto close success alert after 5 seconds
+    setTimeout(() => {
+        closeAlert();
+    }, 5000);
 </script>
+@endsection
