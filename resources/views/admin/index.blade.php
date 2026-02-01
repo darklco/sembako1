@@ -50,6 +50,90 @@
         transform: translateY(-1px);
     }
 
+    /* Alert Styles */
+    .alert {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+
+    .alert-success {
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+    }
+
+    .alert-icon {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .alert-success .alert-icon {
+        color: #16a34a;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-content strong {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #16a34a;
+    }
+
+    .alert-content p {
+        margin: 0;
+        font-size: 14px;
+        color: #525252;
+    }
+
+    .alert-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #737373;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+
+    .alert-close:hover {
+        color: #1a1a1a;
+    }
+
     .content-card {
         background: #ffffff;
         border: 1px solid #e8e8e8;
@@ -266,6 +350,20 @@
         </a>
     </div>
 
+    <!-- Alert Success -->
+    @if(session('success'))
+    <div class="alert alert-success" id="successAlert">
+        <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="alert-content">
+            <strong>Berhasil!</strong>
+            <p>{{ session('success') }}</p>
+        </div>
+        <button class="alert-close" onclick="closeAlert()">×</button>
+    </div>
+    @endif
+
     <div class="content-card">
         <div class="card-header">
             <input 
@@ -365,5 +463,18 @@
             mainTable.style.display = "table";
         }
     }
+
+    function closeAlert() {
+        const alert = document.getElementById('successAlert');
+        if (alert) {
+            alert.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }
+
+    // Auto close success alert after 5 seconds
+    setTimeout(() => {
+        closeAlert();
+    }, 5000);
 </script>
 @endsection
