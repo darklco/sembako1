@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Product;
 
 class NotificationController extends Controller
 {
     public function index()
     {
-        // ambil produk yang punya diskon
+        
+        Notification::where('is_read', false)->update(['is_read' => true]);
+
+       
         $notifications = Product::where('discount', '>', 0)
             ->orderBy('updated_at', 'desc')
             ->get();

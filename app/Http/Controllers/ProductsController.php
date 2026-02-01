@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,14 +38,19 @@ class ProductsController extends Controller
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
-        Product::create($data);
+        $product = Product::create($data);
+
+        // Kirim notifikasi kalau ada diskon
+        if (!empty($data['discount']) && $data['discount'] > 0) {
+            Notification::create([
+                'title' => 'Diskon Baru: ' . $product->name,
+                'message' => 'Produk ' . $product->name . ' mendapat diskon ' . $product->discount . '%',
+                'is_read' => false,
+            ]);
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil ditambahkan');
-
-            if (!empty($data['discount']) && $data['discount'] > 0) {
-            $data['discount'] = now();
-        }
     }
 
     // FORM EDIT
@@ -60,7 +66,7 @@ class ProductsController extends Controller
             'name' => 'nullable|string',
             'description' => 'nullable|string',
             'price' => 'required|integer',
-             'discount' => 'nullable|integer|min:0|max:100',
+            'discount' => 'nullable|integer|min:0|max:100',
             'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpg,png,jpeg'
         ]);
@@ -72,19 +78,23 @@ class ProductsController extends Controller
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
+        // Kirim notifikasi kalau diskon berubah atau baru ditambah
+        if (
+            isset($data['discount']) &&
+            $data['discount'] > 0 &&
+            $product->discount != $data['discount']
+        ) {
+            Notification::create([
+                'title' => 'Update Diskon: ' . $product->name,
+                'message' => 'Diskon produk ' . $product->name . ' diupdate menjadi ' . $data['discount'] . '%',
+                'is_read' => false,
+            ]);
+        }
+
         $product->update($data);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil diupdate');
-
-            if (
-                isset($data['discount']) &&
-                $data['discount'] > 0 &&
-                $product->discount != $data['discount']
-            ) {
-                $data['discount'] = now();
-            }
-
     }
 
     // DELETE

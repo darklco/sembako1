@@ -28,19 +28,19 @@ class TransactionController extends Controller
     }
 
     // UNTUK KASIR: Otomatis reset setiap hari (hanya tampil hari ini)
-    public function riwayatKasir()
-    {
-        // Logika: Ambil data yang HANYA dibuat tanggal hari ini
-       $transactions = Transaction::whereDate('created_at', Carbon::today())
-                        ->latest()
-                        ->get();
+   public function riwayatKasir()
+{
+    $transactions = Transaction::with('items.product') // Tambahkan ini
+                    ->whereDate('created_at', Carbon::today())
+                    ->latest()
+                    ->get();
+          // Stats tetap hitung dari hari ini aja
+    $transaksiHariIni = $transactions->filter(fn($trx) => $trx->created_at->isToday());
+    $totalPendapatan = $transaksiHariIni->sum('total');
+    $jumlahTransaksi = $transaksiHariIni->count();
 
-        $totalPendapatan = $transactions->sum('total');
-        $jumlahTransaksi = $transactions->count();
-
-        return view('users.riwayat', compact('transactions', 'totalPendapatan', 'jumlahTransaksi'));
-    }
-
+    return view('users.riwayat', compact('transactions', 'totalPendapatan', 'jumlahTransaksi'));
+}
     public function store(Request $request)
     {
         $request->validate([

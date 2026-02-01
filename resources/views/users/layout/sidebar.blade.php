@@ -66,6 +66,23 @@
     box-shadow: 0 4px 12px rgba(100, 39, 20, 0.2);
 }
 
+/* NOTIFIKASI BADGE */
+.notif-badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    line-height: 1;
+}
+
 /* ===============================
    MOBILE MODE
 ================================ */
@@ -84,6 +101,10 @@
      SIDEBAR HTML
 ================================ -->
 
+@php
+    $unreadCount = \App\Models\Notification::where('is_read', false)->count();
+@endphp
+
 <div class="sidebar">
 
     <div class="sidebar-brand">
@@ -99,22 +120,23 @@
             <span>Produk</span>
         </a>
 
-        <a href="{{ route('users.index') }}"
-           class="{{ Request::is('users/transaksi*') ? 'active' : '' }}">
-            <i class="fa-solid fa-cash-register"></i>
-            <span>Transaksi</span>
-        </a>
+       <a href="{{ route('users.transaksi') }}"
+   class="{{ Request::is('users/transaksi*') ? 'active' : '' }}">
+    <i class="fa-solid fa-cash-register"></i>
+    <span>Transaksi</span>
+</a>
 
         <a href="{{ route('users.riwayat') }}"
            class="{{ Request::is('users/riwayat*') ? 'active' : '' }}">
             <i class="fa-solid fa-history"></i>
             <span>Riwayat</span>
         </a>
-        <a href="{{ route('users.notification') }}"
-           class="{{ Request::is('users/notifikasi*') ? 'active' : '' }}">
-            <i class="fa-solid fa-bell"></i>
-            <span>Notifikasi</span>
-        </a>
+
+<a href="{{ route('users.notification') }}"
+   class="{{ Request::is('users/notification*') ? 'active' : '' }}">
+    <i class="fa-solid fa-bell"></i>
+    <span>Notifikasi</span>
+</a>
     </nav>
 
 </div>

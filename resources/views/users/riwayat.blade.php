@@ -806,13 +806,13 @@
                             <div class="trx-date">{{ $trx->created_at->format('d/m/Y') }}</div>
                             <div class="trx-time">{{ $trx->created_at->format('H:i:s') }} WIB</div>
                         </td>
-                        <td>
+                            <td>
                             <div class="product-list">
-                                @foreach($trx->items as $item)
-                                    <span class="product-item">
-                                        {{ $item->product->name }} 
-                                        <span class="product-qty">({{ $item->quantity }}x)</span>{{ !$loop->last ? ', ' : '' }}
-                                    </span>
+                            @foreach($trx->items as $item)
+                            <span class="product-item">
+                            {{ $item->product->name }} 
+                            <span class="product-qty">({{ $item->qty }}x)</span>{{ !$loop->last ? ', ' : '' }}
+                            </span>
                                 @endforeach
                             </div>
                         </td>
