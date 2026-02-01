@@ -88,7 +88,23 @@
         box-shadow: 0 4px 12px rgba(100, 39, 20, 0.2);
     }
 
-    /* ===== CONTENT (INI FIX UTAMANYA) ===== */
+    /* ===== NOTIF BADGE ===== */
+    .notif-badge {
+        margin-left: auto;
+        background: #ef4444;
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        min-width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+    }
+
+    /* ===== CONTENT ===== */
     .content {
         margin-left: 260px;
         padding: 30px;
@@ -96,12 +112,6 @@
         min-height: 100vh;
         background: var(--bg-krem);
     }
-    @media (max-width: 768px) {
-    .content {
-        margin-left: 0;
-        width: 100%;
-    }
-}
 
     /* ===== MOBILE NAVBAR ===== */
     .mobile-navbar {
@@ -159,13 +169,17 @@
         </div>
 
         <nav>
+            @php
+                $unreadCount = \App\Models\Notification::where('is_read', false)->count();
+            @endphp
+
             <a href="{{ route('users.products') }}"
                class="{{ (Request::is('users') || Request::is('users/products*')) ? 'active' : '' }}">
                 <i class="fa-solid fa-store"></i>
                 <span>Produk</span>
             </a>
 
-            <a href="{{ route('users.index') }}"
+            <a href="{{ route('users.transaksi') }}"
                class="{{ Request::is('users/transaksi*') ? 'active' : '' }}">
                 <i class="fa-solid fa-cash-register"></i>
                 <span>Transaksi</span>
@@ -178,12 +192,15 @@
             </a>
 
             <a href="{{ route('users.notification') }}"
-               class="{{ Request::is('users/notifikasi*') ? 'active' : '' }}">
+               class="{{ Request::is('users/notifications*') ? 'active' : '' }}">
                 <i class="fa-solid fa-bell"></i>
                 <span>Notifikasi</span>
+                @if($unreadCount > 0)
+                    <span class="notif-badge">{{ $unreadCount }}</span>
+                @endif
             </a>
         </nav>
-    </div>
+    </div> <!-- CLOSING SIDEBAR — ini yang hilang -->
 
     <!-- MOBILE NAVBAR -->
     <div class="mobile-navbar">
@@ -203,17 +220,6 @@
 document.getElementById('toggleSidebar')?.addEventListener('click', function () {
     document.querySelector('.sidebar').classList.toggle('active');
 });
-
-document.addEventListener("DOMContentLoaded", function() {
-    // document.querySelectorAll('img').forEach(function(img) {
-    //     img.onerror = function() {
-    //         this.src = "{{ asset('images/logo.png') }}";
-    //         this.style.objectFit = 'contain';
-    //         this.style.padding = '10px';
-    //         this.style.background = '#fcf5e5';
-    //     };
-    });
-// });
 </script>
 
 </body>
