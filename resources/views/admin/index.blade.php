@@ -149,7 +149,7 @@
     .search-input {
         width: 100%;
         max-width: 400px;
-        padding: 12px 16\px;
+        padding: 12px 16px;
         border: 1px solid #e8e8e8;
         border-radius: 6px;
         font-size: 14px;
@@ -211,9 +211,38 @@
         color: #1a1a1a;
     }
 
+    .price-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
     .product-price {
-        font-weight: 500;
-        color: #525252;
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 15px;
+    }
+
+    .original-price {
+        font-size: 13px;
+        color: #a3a3a3;
+        text-decoration: line-through;
+    }
+
+    .discount-badge {
+        display: inline-block;
+        background: #dc2626;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .no-discount {
+        display: inline-block;
+        color: #a3a3a3;
+        font-size: 13px;
     }
 
     .stock-badge {
@@ -380,6 +409,7 @@
                     <tr>
                         <th>Nama Produk</th>
                         <th>Harga</th>
+                        <th>Diskon</th>
                         <th>Stok</th>
                         <th>Gambar</th>
                         <th>Aksi</th>
@@ -387,12 +417,30 @@
                 </thead>
                 <tbody id="productTable">
                     @forelse ($products as $product)
+                    @php
+                        $discountedPrice = $product->price;
+                        if ($product->discount && $product->discount > 0) {
+                            $discountedPrice = $product->price - ($product->price * $product->discount / 100);
+                        }
+                    @endphp
                     <tr class="baris-produk">
                         <td>
                             <span class="product-name nama-target">{{ $product->name }}</span>
                         </td>
                         <td>
-                            <span class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                            <div class="price-wrapper">
+                                <span class="product-price">Rp {{ number_format($discountedPrice, 0, ',', '.') }}</span>
+                                @if($product->discount && $product->discount > 0)
+                                    <span class="original-price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            @if($product->discount && $product->discount > 0)
+                                <span class="discount-badge">{{ $product->discount }}%</span>
+                            @else
+                                <span class="no-discount">-</span>
+                            @endif
                         </td>
                         <td>
                             <span class="stock-badge">{{ $product->stock }} pcs</span>
@@ -417,7 +465,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="empty-state">
+                        <td colspan="6" class="empty-state">
                             <p>Belum ada produk. Mulai tambahkan produk pertama Anda.</p>
                         </td>
                     </tr>

@@ -76,6 +76,7 @@
     .product-image-section {
         grid-column: 2;
         grid-row: 1;
+        position: relative;
     }
 
     .product-image-wrapper {
@@ -107,6 +108,21 @@
         color: #aaa;
         font-size: 18px;
         font-weight: 500;
+    }
+
+    /* Discount Badge on Image */
+    .discount-badge-overlay {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 18px;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        z-index: 10;
     }
 
     /* Info Section - Right */
@@ -143,11 +159,41 @@
         font-weight: 600;
     }
 
+    .price-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
     .product-price {
         font-size: 32px;
         font-weight: 700;
         color: var(--accent);
         margin: 0;
+    }
+
+    .original-price {
+        font-size: 18px;
+        color: var(--bg-cream);
+        opacity: 0.7;
+        text-decoration: line-through;
+        margin: 0;
+    }
+
+    .discount-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(236, 145, 5, 0.2);
+        padding: 6px 12px;
+        border-radius: 6px;
+        margin-top: 4px;
+    }
+
+    .discount-info span {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--accent);
     }
 
     /* Info Items */
@@ -232,6 +278,29 @@
         white-space: pre-line;
     }
 
+    /* Savings Highlight */
+    .savings-highlight {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        border: 2px solid #86efac;
+        padding: 16px;
+        border-radius: 10px;
+        margin-top: 12px;
+    }
+
+    .savings-text {
+        font-size: 14px;
+        color: #166534;
+        font-weight: 600;
+        margin: 0;
+        text-align: center;
+    }
+
+    .savings-amount {
+        font-size: 18px;
+        color: #15803d;
+        font-weight: 700;
+    }
+
     /* Responsive */
     @media (max-width: 1200px) {
         .product-detail-row {
@@ -287,6 +356,13 @@
         .product-price {
             font-size: 28px;
         }
+
+        .discount-badge-overlay {
+            top: 12px;
+            right: 12px;
+            padding: 10px 16px;
+            font-size: 16px;
+        }
     }
 
     @media (max-width: 576px) {
@@ -306,6 +382,10 @@
             font-size: 26px;
         }
 
+        .original-price {
+            font-size: 16px;
+        }
+
         .product-price-box {
             padding: 20px;
         }
@@ -317,6 +397,13 @@
         .description-box {
             padding: 20px;
         }
+
+        .discount-badge-overlay {
+            top: 10px;
+            right: 10px;
+            padding: 8px 14px;
+            font-size: 14px;
+        }
     }
 </style>
 
@@ -327,6 +414,16 @@
         </svg>
         Kembali
     </a>
+
+    @php
+        $discountedPrice = $product->price;
+        $hasDiscount = $product->discount && $product->discount > 0;
+        
+        if ($hasDiscount) {
+            $discountedPrice = $product->price - ($product->price * $product->discount / 100);
+            $savedAmount = $product->price - $discountedPrice;
+        }
+    @endphp
 
     <div class="product-detail-card">
         <div class="product-detail-row">
@@ -347,6 +444,12 @@
 
             <!-- Image Section - Center -->
             <div class="product-image-section">
+                @if($hasDiscount)
+                <div class="discount-badge-overlay">
+                    -{{ $product->discount }}%
+                </div>
+                @endif
+                
                 <div class="product-image-wrapper">
                     @if($product->image)
                         <img src="{{ asset('storage/' . $product->image) }}"
@@ -366,10 +469,32 @@
 
                 <div class="product-price-box">
                     <p class="price-label">Harga Produk</p>
-                    <h4 class="product-price">
-                        Rp {{ number_format($product->price, 0, ',', '.') }}
-                    </h4>
+                    <div class="price-wrapper">
+                        <h4 class="product-price">
+                            Rp {{ number_format($discountedPrice, 0, ',', '.') }}
+                        </h4>
+                        
+                        @if($hasDiscount)
+                            <p class="original-price">
+                                Rp {{ number_format($product->price, 0, ',', '.') }}
+                            </p>
+                            <div class="discount-info">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14 5.333L6 13.333L2 9.333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>Hemat {{ $product->discount }}%</span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
+
+                @if($hasDiscount)
+                <div class="savings-highlight">
+                    <p class="savings-text">
+                        Anda hemat <span class="savings-amount">Rp {{ number_format($savedAmount, 0, ',', '.') }}</span> dari harga normal!
+                    </p>
+                </div>
+                @endif
 
                 <div class="info-item">
                     <p class="info-label">Ketersediaan Stok</p>
