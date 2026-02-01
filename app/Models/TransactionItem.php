@@ -9,17 +9,16 @@ class TransactionItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'transaction_id', 
-        'product_id', 
-        'qty', 
-        'price', 
-        'subtotal'
+   protected $fillable = [
+        'transaction_id',
+        'product_id',
+        'price_original',
+        'price',
+        'discount',
+        'qty',
+        'subtotal',
     ];
-
-    /**
-     * Relasi ke produk (opsional tapi berguna)
-     */
+    
     public function product()
     {
         return $this->belongsTo(Product::class);

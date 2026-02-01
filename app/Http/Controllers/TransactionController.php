@@ -60,25 +60,38 @@ class TransactionController extends Controller
             ]);
 
             foreach ($request->items as $item) {
-                $product = Product::lockForUpdate()->find($item['product_id']);
+    $product = Product::lockForUpdate()->find($item['product_id']);
 
-                if ($product->stock < $item['qty']) {
-                    throw new \Exception("Stok {$product->name} tidak cukup");
-                }
+    if ($product->stock < $item['qty']) {
+        throw new \Exception("Stok {$product->name} tidak cukup");
+    }
 
-                $subtotal = $product->price * $item['qty'];
-                $total += $subtotal;
+    $hargaAsli = $product->price;
+    $diskon = $product->discount ?? 0;
 
-                TransactionItem::create([
-                    'transaction_id' => $transaction->id,
-                    'product_id' => $product->id,
-                    'price' => $product->price,
-                    'qty' => $item['qty'],
-                    'subtotal' => $subtotal,
-                ]);
+    
+    $hargaFinal = $hargaAsli;
+    if ($diskon > 0) {
+        $hargaFinal = $hargaAsli - ($hargaAsli * $diskon / 100);
+    }
 
-                $product->decrement('stock', $item['qty']);
-            }
+    $subtotal = $hargaFinal * $item['qty'];
+    $total += $subtotal;
+
+    TransactionItem::create([
+        'transaction_id' => $transaction->id,
+        'product_id' => $product->id,
+        'price_original' => $hargaAsli,
+        'price' => $hargaFinal,
+        'discount' => $diskon,
+
+        'qty' => $item['qty'],
+        'subtotal' => $subtotal,
+    ]);
+
+    $product->decrement('stock', $item['qty']);
+}
+
 
             $transaction->update(['total' => $total]);
 

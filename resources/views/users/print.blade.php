@@ -669,16 +669,56 @@
                     </div>
                     <div class="section-title">Detail Pembelian</div>
                 </div>
+@foreach($transaction->items as $item)
+<div class="item-row">
 
-                @foreach($transaction->items as $item)
-                <div class="item-row">
-                    <div class="item-name">{{ $item->product->name }}</div>
-                    <div class="item-detail">
-                        <span class="item-qty">{{ $item->qty }} x Rp {{ number_format($item->price, 0, ',', '.') }}</span>
-                        <span class="item-subtotal">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-                @endforeach
+    <!-- NAMA PRODUK -->
+    <div class="item-name">
+        {{ $item->product->name }}
+    </div>
+
+    <!-- HARGA ASLI -->
+    <div class="item-detail">
+        <span>Harga</span>
+        <span>
+            Rp {{ number_format($item->price_original,0,',','.') }}
+        </span>
+    </div>
+
+    <!-- DISKON -->
+    @if($item->discount > 0)
+    <div class="item-detail" style="color:#e53e3e">
+        <span>Diskon ({{ $item->discount }}%)</span>
+        <span>
+            -Rp {{
+                number_format(
+                    $item->price_original - $item->price,
+                    0,',','.'
+                )
+            }}
+        </span>
+    </div>
+    @endif
+
+    <!-- QTY -->
+    <div class="item-detail">
+        <span>Qty</span>
+        <span>
+            {{ $item->qty }} x Rp {{ number_format($item->price,0,',','.') }}
+        </span>
+    </div>
+
+    <!-- SUBTOTAL -->
+    <div class="item-detail" style="font-weight:700; color:#ec9105">
+        <span>Subtotal</span>
+        <span>
+            Rp {{ number_format($item->subtotal,0,',','.') }}
+        </span>
+    </div>
+
+</div>
+@endforeach
+
             </div>
 
             <!-- Total Section -->

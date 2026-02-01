@@ -88,14 +88,20 @@
         box-shadow: 0 4px 12px rgba(100, 39, 20, 0.2);
     }
 
-    /* ===== CONTENT ===== */
+    /* ===== CONTENT (INI FIX UTAMANYA) ===== */
     .content {
         margin-left: 260px;
         padding: 30px;
-        width: 100%;
+        width: calc(100% - 260px);
         min-height: 100vh;
         background: var(--bg-krem);
     }
+    @media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
 
     /* ===== MOBILE NAVBAR ===== */
     .mobile-navbar {
@@ -114,7 +120,8 @@
 
         .content {
             margin-left: 0;
-            padding: 16px;
+            width: 100%;
+            padding: 20px;
         }
 
         .mobile-navbar {
@@ -169,6 +176,7 @@
                 <i class="fa-solid fa-history"></i>
                 <span>Riwayat</span>
             </a>
+
             <a href="{{ route('users.notification') }}"
                class="{{ Request::is('users/notifikasi*') ? 'active' : '' }}">
                 <i class="fa-solid fa-bell"></i>
@@ -196,17 +204,16 @@ document.getElementById('toggleSidebar')?.addEventListener('click', function () 
     document.querySelector('.sidebar').classList.toggle('active');
 });
 
-
 document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll('img').forEach(function(img) {
-        img.onerror = function() {
-            this.src = "{{ asset('images/logo.png') }}";
-            this.style.objectFit = 'contain';
-            this.style.padding = '10px';
-            this.style.background = '#fcf5e5';
-        };
+    // document.querySelectorAll('img').forEach(function(img) {
+    //     img.onerror = function() {
+    //         this.src = "{{ asset('images/logo.png') }}";
+    //         this.style.objectFit = 'contain';
+    //         this.style.padding = '10px';
+    //         this.style.background = '#fcf5e5';
+    //     };
     });
-});
+// });
 </script>
 
 </body>

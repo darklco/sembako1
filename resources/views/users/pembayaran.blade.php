@@ -295,6 +295,7 @@
 
 <script>
     const totalBelanja = parseInt(localStorage.getItem('checkoutTotal')) || 0;
+    const items = JSON.parse(localStorage.getItem('checkoutItems')) || [];
     const rincianNama = localStorage.getItem('checkoutNama') || "Tidak ada barang";
 
     
