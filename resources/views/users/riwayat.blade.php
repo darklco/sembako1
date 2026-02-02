@@ -5,7 +5,8 @@
 @section('content')
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Updated Font Awesome CDN with integrity check -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
     :root {
@@ -187,14 +188,15 @@
     }
 
     .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 26px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        flex-shrink: 0;
     }
 
     .stat-icon.revenue {
@@ -212,6 +214,16 @@
         color: white;
     }
 
+    /* Make sure icon is visible */
+    .stat-icon i {
+        display: block;
+        line-height: 1;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
     .stat-label {
         font-size: 13px;
         text-transform: uppercase;
@@ -219,6 +231,7 @@
         font-weight: 700;
         letter-spacing: 0.5px;
         margin-bottom: 8px;
+        display: block;
     }
 
     .stat-value {
@@ -615,6 +628,12 @@
             font-size: 26px;
         }
 
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            font-size: 22px;
+        }
+
         .controls-section {
             flex-direction: column;
         }
@@ -703,7 +722,7 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-header">
-                <div>
+                <div class="stat-content">
                     <span class="stat-label">Total Pendapatan</span>
                     <h3 class="stat-value">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
                     <span class="stat-change">
@@ -719,7 +738,7 @@
         
         <div class="stat-card">
             <div class="stat-header">
-                <div>
+                <div class="stat-content">
                     <span class="stat-label">Jumlah Transaksi</span>
                     <h3 class="stat-value">{{ $jumlahTransaksi }}</h3>
                     <span class="stat-change">
@@ -735,7 +754,7 @@
         
         <div class="stat-card">
             <div class="stat-header">
-                <div>
+                <div class="stat-content">
                     <span class="stat-label">Terakhir Update</span>
                     <h3 class="stat-value" style="font-size: 18px;">{{ now()->format('H:i:s') }} WIB</h3>
                     <span class="stat-change">
@@ -806,13 +825,13 @@
                             <div class="trx-date">{{ $trx->created_at->format('d/m/Y') }}</div>
                             <div class="trx-time">{{ $trx->created_at->format('H:i:s') }} WIB</div>
                         </td>
-                            <td>
+                        <td>
                             <div class="product-list">
-                            @foreach($trx->items as $item)
-                            <span class="product-item">
-                            {{ $item->product->name }} 
-                            <span class="product-qty">({{ $item->qty }}x)</span>{{ !$loop->last ? ', ' : '' }}
-                            </span>
+                                @foreach($trx->items as $item)
+                                <span class="product-item">
+                                    {{ $item->product->name }} 
+                                    <span class="product-qty">({{ $item->qty }}x)</span>{{ !$loop->last ? ', ' : '' }}
+                                </span>
                                 @endforeach
                             </div>
                         </td>

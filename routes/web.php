@@ -30,7 +30,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     
     Route::get('/profile/edit', [UserController::class, 'editProfile'])->middleware('auth')->name('profile.edit');
-    Route::post('/profile/update', [UserController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
+    Route::put('/profile/update', [UserController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
 
     
     Route::post('/transaction', [TransactionController::class, 'store'])->name('transactions.store');
