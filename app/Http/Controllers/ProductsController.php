@@ -25,38 +25,50 @@ class ProductsController extends Controller
     // CREATE
     public function store(Request $request)
     {
+        // Validasi data
         $data = $request->validate([
-            'name' => 'nullable|string',
-            'description' => 'nullable|string',
-            'price' => 'nullable|integer',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|integer|min:0',
             'discount' => 'nullable|integer|min:0|max:100',
-            'stock' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg'
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'is_consignment' => 'nullable|boolean',
+            'original_price' => 'nullable|integer|min:0',
+            'profit' => 'nullable|integer|min:0',
         ]);
 
+        // Handle image upload
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
+        // Set is_consignment to boolean
+        $data['is_consignment'] = $request->has('is_consignment') ? true : false;
+
+        // Jika barang titipan, pastikan original_price dan profit ada
+        if ($data['is_consignment']) {
+            // Price sudah dihitung di frontend (original_price + profit)
+            // Simpan original_price dan profit
+            $data['original_price'] = $request->original_price;
+            $data['profit'] = $request->profit;
+        } else {
+            // Jika bukan barang titipan, set null
+            $data['original_price'] = null;
+            $data['profit'] = null;
+        }
+
+        // Create product - HANYA SEKALI!
         $product = Product::create($data);
 
-        // Kirim notifikasi kalau ada diskon
-        if (!empty($data['discount']) && $data['discount'] > 0) {
+        // Kirim notifikasi kalau ada diskon (hanya untuk barang bukan titipan)
+        if (!$data['is_consignment'] && !empty($data['discount']) && $data['discount'] > 0) {
             Notification::create([
                 'title' => 'Diskon Baru: ' . $product->name,
                 'message' => 'Produk ' . $product->name . ' mendapat diskon ' . $product->discount . '%',
                 'is_read' => false,
             ]);
         }
-
-        if ($request->is_consignment) {
-            $data['price'] = $request->original_price + $request->profit;
-        } else {
-            $data['original_price'] = null;
-            $data['profit'] = null;
-        }
-
-        Product::create($data);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil ditambahkan');
@@ -72,14 +84,18 @@ class ProductsController extends Controller
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-            'name' => 'nullable|string',
-            'description' => 'nullable|string',
-            'price' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|integer|min:0',
             'discount' => 'nullable|integer|min:0|max:100',
-            'stock' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg'
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'is_consignment' => 'nullable|boolean',
+            'original_price' => 'nullable|integer|min:0',
+            'profit' => 'nullable|integer|min:0',
         ]);
 
+        // Handle image upload
         if ($request->hasFile('image')) {
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
@@ -87,8 +103,21 @@ class ProductsController extends Controller
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
-        // Kirim notifikasi kalau diskon berubah atau baru ditambah
+        // Set is_consignment to boolean
+        $data['is_consignment'] = $request->has('is_consignment') ? true : false;
+
+        // Jika barang titipan, pastikan original_price dan profit ada
+        if ($data['is_consignment']) {
+            $data['original_price'] = $request->original_price;
+            $data['profit'] = $request->profit;
+        } else {
+            $data['original_price'] = null;
+            $data['profit'] = null;
+        }
+
+        // Kirim notifikasi kalau diskon berubah atau baru ditambah (hanya untuk barang bukan titipan)
         if (
+            !$data['is_consignment'] &&
             isset($data['discount']) &&
             $data['discount'] > 0 &&
             $product->discount != $data['discount']

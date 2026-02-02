@@ -143,7 +143,7 @@
                         </div>
 
                         <!-- Price Preview -->
-                        <div class="price-preview" id="pricePreview">
+                        <div class="price-preview" id="pricePreview" style="display: none;">
                             <div class="price-preview-item">
                                 <span class="preview-label">Harga Normal:</span>
                                 <span class="preview-value" id="normalPrice">Rp 0</span>
@@ -199,6 +199,7 @@
                             <label for="stock_consignment">Stok <span class="required">*</span></label>
                             <input type="number" 
                                    id="stock_consignment" 
+                                   name="stock_consignment"
                                    class="@error('stock') input-error @enderror"
                                    placeholder="0" 
                                    min="0" 
@@ -326,7 +327,6 @@
     .alert {
         display: flex;
         align-items: flex-start;
-        gap: 12px;
         padding: 16px;
         border-radius: 8px;
         margin-bottom: 24px;
@@ -369,6 +369,7 @@
         width: 24px;
         height: 24px;
         flex-shrink: 0;
+        margin-right: 12px;
     }
 
     .alert-success .alert-icon {
@@ -437,6 +438,7 @@
         align-items: center;
         justify-content: center;
         transition: color 0.2s;
+        margin-left: 12px;
     }
 
     .alert-close:hover {
@@ -830,6 +832,10 @@
     const pricePreview = document.getElementById('pricePreview');
     const productForm = document.getElementById('productForm');
 
+    // Initialize: Set price as required by default (for normal products)
+    priceInput.setAttribute('required', 'required');
+    stockInput.setAttribute('required', 'required');
+
     // Initialize form based on current product state
     function initializeForm() {
         if (isConsignment.checked) {
@@ -837,15 +843,11 @@
             consignmentForm.style.display = 'block';
             
             priceInput.removeAttribute('required');
-            priceInput.disabled = true;
-            discountInput.disabled = true;
-            stockInput.disabled = true;
+            stockInput.removeAttribute('required');
             
             originalPriceInput.setAttribute('required', 'required');
             profitInput.setAttribute('required', 'required');
-            originalPriceInput.disabled = false;
-            profitInput.disabled = false;
-            stockConsignmentInput.disabled = false;
+            stockConsignmentInput.setAttribute('required', 'required');
             
             calculateConsignmentPrice();
         } else {
@@ -853,15 +855,11 @@
             consignmentForm.style.display = 'none';
             
             priceInput.setAttribute('required', 'required');
-            priceInput.disabled = false;
-            discountInput.disabled = false;
-            stockInput.disabled = false;
+            stockInput.setAttribute('required', 'required');
             
             originalPriceInput.removeAttribute('required');
             profitInput.removeAttribute('required');
-            originalPriceInput.disabled = true;
-            profitInput.disabled = true;
-            stockConsignmentInput.disabled = true;
+            stockConsignmentInput.removeAttribute('required');
             
             calculateNormalPrice();
         }
@@ -870,56 +868,76 @@
     // Toggle between normal and consignment forms
     isConsignment.addEventListener('change', function() {
         if (this.checked) {
+            // Mode Barang Titipan
             normalPriceForm.style.display = 'none';
             consignmentForm.style.display = 'block';
             
+            // Clear & remove required dari normal price fields
             priceInput.value = '';
             discountInput.value = '0';
             priceInput.removeAttribute('required');
-            priceInput.disabled = true;
-            discountInput.disabled = true;
-            stockInput.disabled = true;
+            stockInput.removeAttribute('required');
             
+            // Set required untuk consignment fields
             originalPriceInput.setAttribute('required', 'required');
             profitInput.setAttribute('required', 'required');
-            originalPriceInput.disabled = false;
-            profitInput.disabled = false;
-            stockConsignmentInput.disabled = false;
+            stockConsignmentInput.setAttribute('required', 'required');
+            
         } else {
+            // Mode Normal
             normalPriceForm.style.display = 'block';
             consignmentForm.style.display = 'none';
             
+            // Clear consignment fields
             originalPriceInput.value = '';
             profitInput.value = '';
+            stockConsignmentInput.value = '';
             
+            // Set required untuk normal fields
             priceInput.setAttribute('required', 'required');
-            priceInput.disabled = false;
-            discountInput.disabled = false;
-            stockInput.disabled = false;
+            stockInput.setAttribute('required', 'required');
             
+            // Remove required dari consignment fields
             originalPriceInput.removeAttribute('required');
             profitInput.removeAttribute('required');
-            originalPriceInput.disabled = true;
-            profitInput.disabled = true;
-            stockConsignmentInput.disabled = true;
+            stockConsignmentInput.removeAttribute('required');
         }
     });
 
-    // Before form submit, sync stock values and enable all relevant inputs
+    // Before form submit - sync data dan hindari duplikasi
     productForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default submit
+        
         if (isConsignment.checked) {
-            // Copy stock from consignment to main stock input
+            // MODE BARANG TITIPAN
+            
+            // 1. Sync stock dari consignment ke main stock input
             stockInput.value = stockConsignmentInput.value;
-            // Enable all required fields
-            stockInput.disabled = false;
-            originalPriceInput.disabled = false;
-            profitInput.disabled = false;
+            
+            // 2. Hitung dan set price dari original_price + profit
+            const original = parseInt(originalPriceInput.value) || 0;
+            const profit = parseInt(profitInput.value) || 0;
+            priceInput.value = original + profit;
+            
+            // 3. Set discount ke 0 untuk barang titipan
+            discountInput.value = 0;
+            
+            // 4. Remove name attribute dari stock_consignment agar tidak terkirim
+            stockConsignmentInput.removeAttribute('name');
+            
         } else {
-            // Normal mode - enable all required fields
-            priceInput.disabled = false;
-            discountInput.disabled = false;
-            stockInput.disabled = false;
+            // MODE NORMAL
+            
+            // Clear consignment fields untuk menghindari data ganda
+            originalPriceInput.value = '';
+            profitInput.value = '';
+            
+            // Pastikan stock_consignment tidak punya name attribute
+            stockConsignmentInput.removeAttribute('name');
         }
+        
+        // Submit form setelah semua data diproses
+        this.submit();
     });
 
     // Calculate consignment price
@@ -928,6 +946,7 @@
         const profit = parseInt(profitInput.value) || 0;
         const total = original + profit;
 
+        // Update preview
         document.getElementById('consignmentOriginal').innerText = 
             'Rp ' + original.toLocaleString('id-ID');
         document.getElementById('consignmentProfit').innerText = 
@@ -941,7 +960,7 @@
         const price = parseInt(priceInput.value) || 0;
         const discount = parseFloat(discountInput.value) || 0;
         
-        if (price > 0) {
+        if (price > 0 && discount > 0) {
             const discountAmount = (price * discount) / 100;
             const finalPrice = price - discountAmount;
             
@@ -951,6 +970,10 @@
                 '- Rp ' + discountAmount.toLocaleString('id-ID');
             document.getElementById('finalPrice').innerText = 
                 'Rp ' + finalPrice.toLocaleString('id-ID');
+            
+            pricePreview.style.display = 'block';
+        } else {
+            pricePreview.style.display = 'none';
         }
     }
 
@@ -977,41 +1000,26 @@
 
     function previewImage(event) {
         const file = event.target.files[0];
-        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            document.getElementById('preview').src = e.target.result;
+            document.getElementById('newImagePreview').style.display = 'block';
+            
+            // Hide current image if exists
+            const currentImage = document.getElementById('currentImage');
+            if (currentImage) {
+                currentImage.style.display = 'none';
+            }
+            
+            // Hide upload label if exists
+            const uploadLabel = document.getElementById('uploadLabel');
+            if (uploadLabel) {
+                uploadLabel.style.display = 'none';
+            }
+        }
         
         if (file) {
-            // Validate file size
-            if (file.size > maxSize) {
-                alert('Ukuran file terlalu besar! Maksimal 2MB');
-                event.target.value = '';
-                return;
-            }
-            
-            // Validate file type
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-            if (!validTypes.includes(file.type)) {
-                alert('Format file tidak valid! Gunakan JPG, PNG, atau GIF');
-                event.target.value = '';
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('preview').src = e.target.result;
-                document.getElementById('newImagePreview').style.display = 'block';
-                
-                // Hide current image if exists
-                const currentImage = document.getElementById('currentImage');
-                if (currentImage) {
-                    currentImage.style.display = 'none';
-                }
-                
-                // Hide upload label if exists
-                const uploadLabel = document.getElementById('uploadLabel');
-                if (uploadLabel) {
-                    uploadLabel.style.display = 'none';
-                }
-            }
             reader.readAsDataURL(file);
         }
     }
@@ -1033,6 +1041,7 @@
         }
     }
 
+    // Alert close functions
     function closeAlert() {
         const alert = document.getElementById('successAlert');
         if (alert) {
@@ -1058,94 +1067,6 @@
     setTimeout(() => {
         closeAlert();
     }, 5000);
-
-    // Form validation before submit
-    productForm.addEventListener('submit', function(e) {
-        let isValid = true;
-        let errorMessages = [];
-
-        // Validate name
-        const name = document.getElementById('name').value.trim();
-        if (name === '') {
-            isValid = false;
-            errorMessages.push('Nama produk harus diisi');
-        } else if (name.length < 3) {
-            isValid = false;
-            errorMessages.push('Nama produk minimal 3 karakter');
-        }
-
-        // Validate description
-        const description = document.getElementById('description').value.trim();
-        if (description === '') {
-            isValid = false;
-            errorMessages.push('Deskripsi produk harus diisi');
-        } else if (description.length < 10) {
-            isValid = false;
-            errorMessages.push('Deskripsi produk minimal 10 karakter');
-        }
-
-        if (isConsignment.checked) {
-            // Validate consignment fields
-            const originalPrice = parseInt(originalPriceInput.value);
-            if (isNaN(originalPrice) || originalPrice <= 0) {
-                isValid = false;
-                errorMessages.push('Harga modal harus lebih dari 0');
-            }
-
-            const profit = parseInt(profitInput.value);
-            if (isNaN(profit) || profit < 0) {
-                isValid = false;
-                errorMessages.push('Keuntungan tidak boleh negatif');
-            }
-
-            const stockCons = parseInt(stockConsignmentInput.value);
-            if (isNaN(stockCons) || stockCons < 0) {
-                isValid = false;
-                errorMessages.push('Stok tidak boleh negatif');
-            }
-        } else {
-            // Validate normal price fields
-            const price = parseInt(priceInput.value);
-            if (isNaN(price) || price <= 0) {
-                isValid = false;
-                errorMessages.push('Harga harus lebih dari 0');
-            }
-
-            const stock = parseInt(stockInput.value);
-            if (isNaN(stock) || stock < 0) {
-                isValid = false;
-                errorMessages.push('Stok tidak boleh negatif');
-            }
-
-            const discount = parseFloat(discountInput.value);
-            if (discount < 0 || discount > 100) {
-                isValid = false;
-                errorMessages.push('Diskon harus antara 0-100');
-            }
-        }
-
-        // Validate image if new one is selected
-        const imageInput = document.getElementById('image');
-        if (imageInput.files.length > 0) {
-            const file = imageInput.files[0];
-            const maxSize = 2 * 1024 * 1024; // 2MB
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-            
-            if (file.size > maxSize) {
-                isValid = false;
-                errorMessages.push('Ukuran gambar maksimal 2MB');
-            }
-            
-            if (!validTypes.includes(file.type)) {
-                isValid = false;
-                errorMessages.push('Format gambar harus JPG, PNG, atau GIF');
-            }
-        }
-
-        if (!isValid) {
-            e.preventDefault();
-            alert('Error:\n' + errorMessages.join('\n'));
-        }
-    });
 </script>
+
 @endsection
