@@ -15,7 +15,10 @@ class Product extends Model
         'price',
         'discount',
         'stock',
-        'image'
+        'image',
+        'is_consignment',
+        'original_price',
+        'profit',
     ];
 
     public function show(Product $product)

@@ -75,70 +75,154 @@
                         @enderror
                     </div>
 
-                    <div class="form-row">
+                    <!-- Checkbox Barang Titipan -->
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" 
+                                   id="is_consignment" 
+                                   name="is_consignment" 
+                                   value="1"
+                                   {{ old('is_consignment', $product->is_consignment ?? 0) ? 'checked' : '' }}>
+                            <span>Barang Titipan</span>
+                        </label>
+                        <span class="help-text">
+                            Centang jika produk ini merupakan barang titipan
+                        </span>
+                    </div>
+
+                    <!-- Form Normal (Price & Discount) -->
+                    <div id="normalPriceForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="price">Harga (Rp) <span class="required">*</span></label>
+                                <input type="number" 
+                                       id="price" 
+                                       name="price" 
+                                       class="@error('price') input-error @enderror"
+                                       placeholder="0" 
+                                       min="0" 
+                                       step="1"
+                                       value="{{ old('price', $product->price) }}">
+                                @error('price')
+                                    <span class="error-message">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="stock">Stok <span class="required">*</span></label>
+                                <input type="number" 
+                                       id="stock" 
+                                       name="stock" 
+                                       class="@error('stock') input-error @enderror"
+                                       placeholder="0" 
+                                       min="0" 
+                                       step="1"
+                                       value="{{ old('stock', $product->stock) }}" 
+                                       required>
+                                @error('stock')
+                                    <span class="error-message">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label for="price">Harga (Rp) <span class="required">*</span></label>
+                            <label for="discount">Diskon (%)</label>
                             <input type="number" 
-                                   id="price" 
-                                   name="price" 
-                                   class="@error('price') input-error @enderror"
+                                   id="discount" 
+                                   name="discount" 
+                                   class="@error('discount') input-error @enderror"
                                    placeholder="0" 
                                    min="0" 
-                                   step="1"
-                                   value="{{ old('price', $product->price) }}" 
-                                   required>
-                            @error('price')
+                                   max="100" 
+                                   step="0.01"
+                                   value="{{ old('discount', $product->discount ?? 0) }}">
+                            <span class="help-text">Masukkan nilai diskon dalam persen (0-100)</span>
+                            @error('discount')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
 
+                        <!-- Price Preview -->
+                        <div class="price-preview" id="pricePreview">
+                            <div class="price-preview-item">
+                                <span class="preview-label">Harga Normal:</span>
+                                <span class="preview-value" id="normalPrice">Rp 0</span>
+                            </div>
+                            <div class="price-preview-item">
+                                <span class="preview-label">Diskon:</span>
+                                <span class="preview-value discount-value" id="discountAmount">- Rp 0</span>
+                            </div>
+                            <div class="price-preview-item final">
+                                <span class="preview-label">Harga Setelah Diskon:</span>
+                                <span class="preview-value final-price" id="finalPrice">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Consignment (Original Price & Profit) -->
+                    <div id="consignmentForm" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="original_price">Harga Modal (Rp) <span class="required">*</span></label>
+                                <input type="number" 
+                                       id="original_price" 
+                                       name="original_price" 
+                                       class="@error('original_price') input-error @enderror"
+                                       placeholder="0" 
+                                       min="0" 
+                                       step="1"
+                                       value="{{ old('original_price', $product->original_price ?? '') }}">
+                                <span class="help-text">Harga modal dari pemilik barang</span>
+                                @error('original_price')
+                                    <span class="error-message">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="profit">Keuntungan (Rp) <span class="required">*</span></label>
+                                <input type="number" 
+                                       id="profit" 
+                                       name="profit" 
+                                       class="@error('profit') input-error @enderror"
+                                       placeholder="0" 
+                                       min="0" 
+                                       step="1"
+                                       value="{{ old('profit', $product->profit ?? '') }}">
+                                <span class="help-text">Keuntungan yang diinginkan</span>
+                                @error('profit')
+                                    <span class="error-message">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label for="stock">Stok <span class="required">*</span></label>
+                            <label for="stock_consignment">Stok <span class="required">*</span></label>
                             <input type="number" 
-                                   id="stock" 
-                                   name="stock" 
+                                   id="stock_consignment" 
                                    class="@error('stock') input-error @enderror"
                                    placeholder="0" 
                                    min="0" 
                                    step="1"
-                                   value="{{ old('stock', $product->stock) }}" 
-                                   required>
+                                   value="{{ old('stock', $product->stock) }}">
                             @error('stock')
                                 <span class="error-message">{{ $message }}</span>
                             @enderror
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="discount">Diskon (%)</label>
-                        <input type="number" 
-                               id="discount" 
-                               name="discount" 
-                               class="@error('discount') input-error @enderror"
-                               placeholder="0" 
-                               min="0" 
-                               max="100" 
-                               step="0.01"
-                               value="{{ old('discount', $product->discount ?? 0) }}">
-                        <span class="help-text">Masukkan nilai diskon dalam persen (0-100)</span>
-                        @error('discount')
-                            <span class="error-message">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <!-- Price Preview -->
-                    <div class="price-preview" id="pricePreview">
-                        <div class="price-preview-item">
-                            <span class="preview-label">Harga Normal:</span>
-                            <span class="preview-value" id="normalPrice">Rp 0</span>
-                        </div>
-                        <div class="price-preview-item">
-                            <span class="preview-label">Diskon:</span>
-                            <span class="preview-value discount-value" id="discountAmount">- Rp 0</span>
-                        </div>
-                        <div class="price-preview-item final">
-                            <span class="preview-label">Harga Setelah Diskon:</span>
-                            <span class="preview-value final-price" id="finalPrice">Rp 0</span>
+                        <!-- Consignment Price Preview -->
+                        <div class="price-preview">
+                            <div class="price-preview-item">
+                                <span class="preview-label">Harga Modal:</span>
+                                <span class="preview-value" id="consignmentOriginal">Rp 0</span>
+                            </div>
+                            <div class="price-preview-item">
+                                <span class="preview-label">Keuntungan:</span>
+                                <span class="preview-value" id="consignmentProfit">+ Rp 0</span>
+                            </div>
+                            <div class="price-preview-item final">
+                                <span class="preview-label">Harga Jual:</span>
+                                <span class="preview-value final-price" id="consignmentPrice">Rp 0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -396,6 +480,20 @@
         font-size: 14px;
         font-weight: 600;
         color: #1a1a1a;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: 500 !important;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
     }
 
     .required {
@@ -719,6 +817,160 @@
 </style>
 
 <script>
+    // Get elements
+    const isConsignment = document.getElementById('is_consignment');
+    const normalPriceForm = document.getElementById('normalPriceForm');
+    const consignmentForm = document.getElementById('consignmentForm');
+    const priceInput = document.getElementById('price');
+    const discountInput = document.getElementById('discount');
+    const stockInput = document.getElementById('stock');
+    const stockConsignmentInput = document.getElementById('stock_consignment');
+    const originalPriceInput = document.getElementById('original_price');
+    const profitInput = document.getElementById('profit');
+    const pricePreview = document.getElementById('pricePreview');
+    const productForm = document.getElementById('productForm');
+
+    // Initialize form based on current product state
+    function initializeForm() {
+        if (isConsignment.checked) {
+            normalPriceForm.style.display = 'none';
+            consignmentForm.style.display = 'block';
+            
+            priceInput.removeAttribute('required');
+            priceInput.disabled = true;
+            discountInput.disabled = true;
+            stockInput.disabled = true;
+            
+            originalPriceInput.setAttribute('required', 'required');
+            profitInput.setAttribute('required', 'required');
+            originalPriceInput.disabled = false;
+            profitInput.disabled = false;
+            stockConsignmentInput.disabled = false;
+            
+            calculateConsignmentPrice();
+        } else {
+            normalPriceForm.style.display = 'block';
+            consignmentForm.style.display = 'none';
+            
+            priceInput.setAttribute('required', 'required');
+            priceInput.disabled = false;
+            discountInput.disabled = false;
+            stockInput.disabled = false;
+            
+            originalPriceInput.removeAttribute('required');
+            profitInput.removeAttribute('required');
+            originalPriceInput.disabled = true;
+            profitInput.disabled = true;
+            stockConsignmentInput.disabled = true;
+            
+            calculateNormalPrice();
+        }
+    }
+
+    // Toggle between normal and consignment forms
+    isConsignment.addEventListener('change', function() {
+        if (this.checked) {
+            normalPriceForm.style.display = 'none';
+            consignmentForm.style.display = 'block';
+            
+            priceInput.value = '';
+            discountInput.value = '0';
+            priceInput.removeAttribute('required');
+            priceInput.disabled = true;
+            discountInput.disabled = true;
+            stockInput.disabled = true;
+            
+            originalPriceInput.setAttribute('required', 'required');
+            profitInput.setAttribute('required', 'required');
+            originalPriceInput.disabled = false;
+            profitInput.disabled = false;
+            stockConsignmentInput.disabled = false;
+        } else {
+            normalPriceForm.style.display = 'block';
+            consignmentForm.style.display = 'none';
+            
+            originalPriceInput.value = '';
+            profitInput.value = '';
+            
+            priceInput.setAttribute('required', 'required');
+            priceInput.disabled = false;
+            discountInput.disabled = false;
+            stockInput.disabled = false;
+            
+            originalPriceInput.removeAttribute('required');
+            profitInput.removeAttribute('required');
+            originalPriceInput.disabled = true;
+            profitInput.disabled = true;
+            stockConsignmentInput.disabled = true;
+        }
+    });
+
+    // Before form submit, sync stock values and enable all relevant inputs
+    productForm.addEventListener('submit', function(e) {
+        if (isConsignment.checked) {
+            // Copy stock from consignment to main stock input
+            stockInput.value = stockConsignmentInput.value;
+            // Enable all required fields
+            stockInput.disabled = false;
+            originalPriceInput.disabled = false;
+            profitInput.disabled = false;
+        } else {
+            // Normal mode - enable all required fields
+            priceInput.disabled = false;
+            discountInput.disabled = false;
+            stockInput.disabled = false;
+        }
+    });
+
+    // Calculate consignment price
+    function calculateConsignmentPrice() {
+        const original = parseInt(originalPriceInput.value) || 0;
+        const profit = parseInt(profitInput.value) || 0;
+        const total = original + profit;
+
+        document.getElementById('consignmentOriginal').innerText = 
+            'Rp ' + original.toLocaleString('id-ID');
+        document.getElementById('consignmentProfit').innerText = 
+            '+ Rp ' + profit.toLocaleString('id-ID');
+        document.getElementById('consignmentPrice').innerText = 
+            'Rp ' + total.toLocaleString('id-ID');
+    }
+
+    // Calculate normal price with discount
+    function calculateNormalPrice() {
+        const price = parseInt(priceInput.value) || 0;
+        const discount = parseFloat(discountInput.value) || 0;
+        
+        if (price > 0) {
+            const discountAmount = (price * discount) / 100;
+            const finalPrice = price - discountAmount;
+            
+            document.getElementById('normalPrice').innerText = 
+                'Rp ' + price.toLocaleString('id-ID');
+            document.getElementById('discountAmount').innerText = 
+                '- Rp ' + discountAmount.toLocaleString('id-ID');
+            document.getElementById('finalPrice').innerText = 
+                'Rp ' + finalPrice.toLocaleString('id-ID');
+        }
+    }
+
+    // Event listeners for consignment calculation
+    if (originalPriceInput) {
+        originalPriceInput.addEventListener('input', calculateConsignmentPrice);
+    }
+    if (profitInput) {
+        profitInput.addEventListener('input', calculateConsignmentPrice);
+    }
+
+    // Event listeners for normal price calculation
+    if (priceInput) {
+        priceInput.addEventListener('input', calculateNormalPrice);
+    }
+    if (discountInput) {
+        discountInput.addEventListener('input', calculateNormalPrice);
+    }
+
+    // Image handling functions
     function triggerFileInput() {
         document.getElementById('image').click();
     }
@@ -797,27 +1049,10 @@
         }
     }
 
-    // Calculate price with discount
-    function calculatePrice() {
-        const price = parseFloat(document.getElementById('price').value) || 0;
-        const discount = parseFloat(document.getElementById('discount').value) || 0;
-        
-        if (price > 0) {
-            const discountAmount = price * (discount / 100);
-            const finalPrice = price - discountAmount;
-            
-            document.getElementById('normalPrice').textContent = 'Rp ' + price.toLocaleString('id-ID');
-            document.getElementById('discountAmount').textContent = '- Rp ' + discountAmount.toLocaleString('id-ID');
-            document.getElementById('finalPrice').textContent = 'Rp ' + finalPrice.toLocaleString('id-ID');
-        }
-    }
-
-    // Add event listeners
-    document.getElementById('price').addEventListener('input', calculatePrice);
-    document.getElementById('discount').addEventListener('input', calculatePrice);
-
-    // Calculate on page load
-    window.addEventListener('load', calculatePrice);
+    // Initialize form on page load
+    window.addEventListener('load', function() {
+        initializeForm();
+    });
 
     // Auto close success alert after 5 seconds
     setTimeout(() => {
@@ -825,7 +1060,7 @@
     }, 5000);
 
     // Form validation before submit
-    document.getElementById('productForm').addEventListener('submit', function(e) {
+    productForm.addEventListener('submit', function(e) {
         let isValid = true;
         let errorMessages = [];
 
@@ -849,25 +1084,44 @@
             errorMessages.push('Deskripsi produk minimal 10 karakter');
         }
 
-        // Validate price
-        const price = parseFloat(document.getElementById('price').value);
-        if (isNaN(price) || price <= 0) {
-            isValid = false;
-            errorMessages.push('Harga harus lebih dari 0');
-        }
+        if (isConsignment.checked) {
+            // Validate consignment fields
+            const originalPrice = parseInt(originalPriceInput.value);
+            if (isNaN(originalPrice) || originalPrice <= 0) {
+                isValid = false;
+                errorMessages.push('Harga modal harus lebih dari 0');
+            }
 
-        // Validate stock
-        const stock = parseInt(document.getElementById('stock').value);
-        if (isNaN(stock) || stock < 0) {
-            isValid = false;
-            errorMessages.push('Stok tidak boleh negatif');
-        }
+            const profit = parseInt(profitInput.value);
+            if (isNaN(profit) || profit < 0) {
+                isValid = false;
+                errorMessages.push('Keuntungan tidak boleh negatif');
+            }
 
-        // Validate discount
-        const discount = parseFloat(document.getElementById('discount').value);
-        if (discount < 0 || discount > 100) {
-            isValid = false;
-            errorMessages.push('Diskon harus antara 0-100');
+            const stockCons = parseInt(stockConsignmentInput.value);
+            if (isNaN(stockCons) || stockCons < 0) {
+                isValid = false;
+                errorMessages.push('Stok tidak boleh negatif');
+            }
+        } else {
+            // Validate normal price fields
+            const price = parseInt(priceInput.value);
+            if (isNaN(price) || price <= 0) {
+                isValid = false;
+                errorMessages.push('Harga harus lebih dari 0');
+            }
+
+            const stock = parseInt(stockInput.value);
+            if (isNaN(stock) || stock < 0) {
+                isValid = false;
+                errorMessages.push('Stok tidak boleh negatif');
+            }
+
+            const discount = parseFloat(discountInput.value);
+            if (discount < 0 || discount > 100) {
+                isValid = false;
+                errorMessages.push('Diskon harus antara 0-100');
+            }
         }
 
         // Validate image if new one is selected

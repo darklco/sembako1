@@ -28,7 +28,7 @@ class ProductsController extends Controller
         $data = $request->validate([
             'name' => 'nullable|string',
             'description' => 'nullable|string',
-            'price' => 'required|integer',
+            'price' => 'nullable|integer',
             'discount' => 'nullable|integer|min:0|max:100',
             'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpg,png,jpeg'
@@ -48,6 +48,15 @@ class ProductsController extends Controller
                 'is_read' => false,
             ]);
         }
+
+        if ($request->is_consignment) {
+            $data['price'] = $request->original_price + $request->profit;
+        } else {
+            $data['original_price'] = null;
+            $data['profit'] = null;
+        }
+
+        Product::create($data);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil ditambahkan');
