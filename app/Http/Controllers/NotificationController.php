@@ -12,7 +12,6 @@ class NotificationController extends Controller
         
         Notification::where('is_read', false)->update(['is_read' => true]);
 
-       
         $notifications = Product::where('discount', '>', 0)
             ->orderBy('updated_at', 'desc')
             ->get();

@@ -29,6 +29,7 @@
         </svg>
         <div class="alert-content">
             <strong>Error!</strong>
+            <p>Terdapat kesalahan pada inputan Anda:</p>
             <ul>
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -40,7 +41,7 @@
     @endif
 
     <div class="form-container">
-        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
             @csrf
             
             <div class="form-grid">
@@ -48,30 +49,80 @@
                 <div class="form-column">
                     <div class="form-group">
                         <label for="name">Nama Produk <span class="required">*</span></label>
-                        <input type="text" id="name" name="name" placeholder="Masukkan nama produk" value="{{ old('name') }}" required>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               class="@error('name') input-error @enderror"
+                               placeholder="Masukkan nama produk" 
+                               value="{{ old('name') }}" 
+                               required>
+                        @error('name')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="description">Deskripsi <span class="required">*</span></label>
-                        <textarea id="description" name="description" placeholder="Masukkan deskripsi produk" rows="5" required>{{ old('description') }}</textarea>
+                        <textarea id="description" 
+                                  name="description" 
+                                  class="@error('description') input-error @enderror"
+                                  placeholder="Masukkan deskripsi produk" 
+                                  rows="5" 
+                                  required>{{ old('description') }}</textarea>
+                        @error('description')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="price">Harga (Rp) <span class="required">*</span></label>
-                            <input type="number" id="price" name="price" placeholder="0" min="0" value="{{ old('price') }}" required>
+                            <input type="number" 
+                                   id="price" 
+                                   name="price" 
+                                   class="@error('price') input-error @enderror"
+                                   placeholder="0" 
+                                   min="0" 
+                                   step="1"
+                                   value="{{ old('price') }}" 
+                                   required>
+                            @error('price')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="form-group">
                             <label for="stock">Stok <span class="required">*</span></label>
-                            <input type="number" id="stock" name="stock" placeholder="0" min="0" value="{{ old('stock') }}" required>
+                            <input type="number" 
+                                   id="stock" 
+                                   name="stock" 
+                                   class="@error('stock') input-error @enderror"
+                                   placeholder="0" 
+                                   min="0" 
+                                   step="1"
+                                   value="{{ old('stock') }}" 
+                                   required>
+                            @error('stock')
+                                <span class="error-message">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="discount">Diskon (%)</label>
-                        <input type="number" id="discount" name="discount" placeholder="0" min="0" max="100" value="{{ old('discount', 0) }}">
+                        <input type="number" 
+                               id="discount" 
+                               name="discount" 
+                               class="@error('discount') input-error @enderror"
+                               placeholder="0" 
+                               min="0" 
+                               max="100" 
+                               step="0.01"
+                               value="{{ old('discount', 0) }}">
                         <span class="help-text">Masukkan nilai diskon dalam persen (0-100)</span>
+                        @error('discount')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <!-- Price Preview -->
@@ -95,8 +146,12 @@
                 <div class="form-column">
                     <div class="form-group">
                         <label>Gambar Produk</label>
-                        <div class="image-upload-wrapper">
-                            <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                        <div class="image-upload-wrapper @error('image') upload-error @enderror">
+                            <input type="file" 
+                                   id="image" 
+                                   name="image" 
+                                   accept="image/jpeg,image/png,image/jpg,image/gif" 
+                                   onchange="previewImage(event)">
                             <label for="image" class="image-upload-label" id="uploadLabel">
                                 <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
@@ -113,6 +168,9 @@
                                 </button>
                             </div>
                         </div>
+                        @error('image')
+                            <span class="error-message">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -181,6 +239,17 @@
         }
     }
 
+    @keyframes slideUp {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+
     .alert-success {
         background: #f0fdf4;
         border: 1px solid #86efac;
@@ -233,17 +302,21 @@
     .alert-content ul {
         list-style: none;
         padding-left: 0;
+        margin-top: 8px;
     }
 
     .alert-content li {
         padding-left: 20px;
         position: relative;
+        margin-bottom: 4px;
     }
 
     .alert-content li::before {
         content: "•";
         position: absolute;
         left: 8px;
+        color: #dc2626;
+        font-weight: bold;
     }
 
     .alert-close {
@@ -314,6 +387,28 @@
         font-style: italic;
     }
 
+    /* Error Message Styles */
+    .error-message {
+        font-size: 12px;
+        color: #dc2626;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        animation: shake 0.3s ease;
+    }
+
+    .error-message::before {
+        content: "⚠";
+        font-size: 14px;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
     input[type="text"],
     input[type="number"],
     textarea {
@@ -333,6 +428,16 @@
         outline: none;
         border-color: #dc2626;
         box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    /* Input Error State */
+    .input-error {
+        border-color: #dc2626 !important;
+        background-color: #fef2f2 !important;
+    }
+
+    .input-error:focus {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
     }
 
     textarea {
@@ -384,6 +489,11 @@
     /* Image Upload */
     .image-upload-wrapper {
         position: relative;
+    }
+
+    .upload-error .image-upload-label {
+        border-color: #dc2626;
+        background-color: #fef2f2;
     }
 
     input[type="file"] {
@@ -544,7 +654,24 @@
 <script>
     function previewImage(event) {
         const file = event.target.files[0];
+        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+        
         if (file) {
+            // Validate file size
+            if (file.size > maxSize) {
+                alert('Ukuran file terlalu besar! Maksimal 2MB');
+                event.target.value = '';
+                return;
+            }
+            
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                alert('Format file tidak valid! Gunakan JPG, PNG, atau GIF');
+                event.target.value = '';
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('preview').src = e.target.result;
@@ -603,5 +730,56 @@
     setTimeout(() => {
         closeAlert();
     }, 5000);
+
+    // Form validation before submit
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        let isValid = true;
+        let errorMessages = [];
+
+        // Validate name
+        const name = document.getElementById('name').value.trim();
+        if (name === '') {
+            isValid = false;
+            errorMessages.push('Nama produk harus diisi');
+        }
+
+        // Validate description
+        const description = document.getElementById('description').value.trim();
+        if (description === '') {
+            isValid = false;
+            errorMessages.push('Deskripsi produk harus diisi');
+        }
+
+        // Validate price
+        const price = parseFloat(document.getElementById('price').value);
+        if (isNaN(price) || price <= 0) {
+            isValid = false;
+            errorMessages.push('Harga harus lebih dari 0');
+        }
+
+        // Validate stock
+        const stock = parseInt(document.getElementById('stock').value);
+        if (isNaN(stock) || stock < 0) {
+            isValid = false;
+            errorMessages.push('Stok tidak boleh negatif');
+        }
+
+        // Validate discount
+        const discount = parseFloat(document.getElementById('discount').value);
+        if (discount < 0 || discount > 100) {
+            isValid = false;
+            errorMessages.push('Diskon harus antara 0-100');
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Error:\n' + errorMessages.join('\n'));
+        }
+    });
+
+    // Initialize price preview if old values exist
+    window.addEventListener('DOMContentLoaded', function() {
+        calculatePrice();
+    });
 </script>
 @endsection
