@@ -4,10 +4,9 @@
 
 @section('styles')
 <style>
-    /* 1. Menghilangkan pembungkus ganda agar tidak terkotak */
     .dashboard-wrapper {
         width: 100%;
-        padding: 30px; /* Padding cukup agar tulisan tidak nempel tembok */
+        padding: 30px;
         box-sizing: border-box;
     }
 
@@ -27,10 +26,9 @@
         color: #64748b;
     }
 
-    /* 2. Grid Statistik - Melebar Full */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 3 Kolom sejajar */
+        grid-template-columns: repeat(3, 1fr);
         gap: 25px;
         margin-bottom: 35px;
         width: 100%;
@@ -73,7 +71,6 @@
         color: #94a3b8;
     }
 
-    /* 3. Area Grafik Melebar Maksimal */
     .chart-box {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -91,12 +88,11 @@
     }
 
     .chart-wrapper {
-        height: 450px; /* Grafik dibuat tinggi dan besar */
+        height: 450px;
         width: 100%;
         position: relative;
     }
 
-    /* Penyesuaian Responsif */
     @media (max-width: 1024px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -155,37 +151,68 @@
             type: 'line',
             data: {
                 labels: {!! json_encode($labels) !!},
-                datasets: [{
-                    label: 'Omzet Penjualan (Rp)',
-                    data: {!! json_encode($totals) !!},
-                    borderColor: '#8b0000',
-                    backgroundColor: 'rgba(139, 0, 0, 0.05)',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointBackgroundColor: '#8b0000',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2
-                }]
+                datasets: [
+                    {
+                        label: 'Penjualan Barang Sendiri (Rp)',
+                        data: {!! json_encode($totalsOwn) !!},
+                        borderColor: '#8b0000',
+                        backgroundColor: 'rgba(139, 0, 0, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#8b0000',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Penjualan Barang Titipan (Rp)',
+                        data: {!! json_encode($totalsConsignment) !!},
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#f59e0b',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { 
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: { size: 13, weight: '600' },
+                            padding: 15,
+                            usePointStyle: true
+                        }
+                    }
                 },
                 scales: {
-                    x: { grid: { display: false } },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { font: { size: 12 } }
+                    },
                     y: {
                         beginAtZero: true,
                         grid: { color: '#f1f5f9' },
                         ticks: {
+                            font: { size: 12 },
                             callback: function(value) {
                                 return 'Rp ' + value.toLocaleString('id-ID');
                             }
                         }
                     }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
                 }
             }
         });

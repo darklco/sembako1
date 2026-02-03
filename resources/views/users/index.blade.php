@@ -68,7 +68,6 @@
             @foreach($products as $p)
             @php 
                 $hasDiscount = ($p->discount_price && $p->discount_price < $p->price) || ($p->discount > 0);
-                $priceAfter = $p->discount_price ?: ($p->discount > 0 ? $p->price - ($p->price * $p->discount / 100) : $p->price);
                 $percent = $p->discount ?: ($p->price > 0 ? round((($p->price - $p->discount_price) / $p->price) * 100) : 0);
             @endphp
             <div class="product-card">
@@ -82,10 +81,10 @@
                     
                     <div class="price-section">
                         @if($hasDiscount) <div class="old-price">Rp {{ number_format($p->price, 0, ',', '.') }}</div> @endif
-                        <div class="current-price">Rp {{ number_format($priceAfter, 0, ',', '.') }}</div>
+                        <div class="current-price">Rp {{ number_format($p->final_price, 0, ',', '.') }}</div>
                     </div>
 
-                    <button class="btn-add" onclick="addToCart({{ $p->id }}, '{{ $p->name }}', {{ $priceAfter }}, {{ $p->stock }})">
+                    <button class="btn-add" onclick="addToCart({{ $p->id }}, '{{ $p->name }}', {{ $p->final_price }}, {{ $p->stock }})">
                         <i class="fa-solid fa-plus"></i> Tambah Ke Keranjang
                     </button>
                 </div>

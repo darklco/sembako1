@@ -26,9 +26,14 @@ class Product extends Model
         return view('users.productsshow', compact('product'));
     }
 
-    public function getFinalPriceAttribute()
+     public function getFinalPriceAttribute()
     {
+        if ($this->is_consignment) {
+            // Harga konsinyasi = original_price + profit
+            return $this->original_price + $this->profit;
+        }
+
+        // Harga biasa
         return $this->price - ($this->price * $this->discount / 100);
     }
-
 }
